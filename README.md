@@ -51,7 +51,7 @@ It's a diary first. Health, period and transition tracking are optional extras y
 
 **System requirements:** Windows 10 or Windows 11, 64 bit. Everything Kaydence needs is included, there's nothing else to install. A microphone is only needed for voice notes.
 
-1. Go to the [latest release](https://github.com/KaydeeCodes/Kaydence/releases/latest) and download `Kaydence-Setup-1.0.0.exe` (the number is the version).
+1. Go to the [latest release](https://github.com/KaydeeCodes/Kaydence/releases/latest) and download the `Kaydence-Setup` file, for example `Kaydence-Setup-1.0.1.exe` (the number is the version).
 2. Run it. Kaydence installs just for you, so it never asks for an administrator password.
 3. Kaydence opens, and a short welcome tour helps you set it up.
 

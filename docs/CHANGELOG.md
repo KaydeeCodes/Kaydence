@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1
+
+**Simpler password setup**
+- Setting a password now takes far fewer clicks: choose your password, save your recovery file, and one message confirms it's all done
+- Removed the extra question about copying the recovery key
+- Fixed a message about "older backups made before encryption" appearing for brand new diaries. Kaydence now quietly tidies away old backups that hold no diary days, and only asks about ones that really contain your writing
+- The lock screen's "Forgot your password?" goes straight to choosing your recovery file
+
 ## 1.0.0, first public release
 
 Kaydence is ready for everyone. Here's what it does:

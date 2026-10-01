@@ -89,8 +89,11 @@ public sealed class AppSettings
 // I keep settings in AppData\Local so nothing ends up synced to OneDrive by accident
 public static class SettingsService
 {
-    public static string AppFolder { get; } =
+    public static string AppFolder { get; private set; } =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Kaydence");
+
+    // I can run from a different folder, like a demo diary, so the real one is never touched
+    public static void UseFolder(string folder) => AppFolder = Path.GetFullPath(folder);
 
     private static string FilePath => Path.Combine(AppFolder, "settings.json");
 

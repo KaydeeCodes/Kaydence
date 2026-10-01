@@ -33,9 +33,15 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        // I only ever want one copy open so two windows can't overwrite each other's saves
-        _instanceMutex = new Mutex(true, InstanceName, out var isFirst);
-        _showSignal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowSignalName);
+        // I switch to another folder first when started with --home, so a demo diary keeps its own settings, logs and backups
+        var home = HomeFrom(e.Args);
+        if (home != null) SettingsService.UseFolder(home);
+        var suffix = home == null ? "" : "." + Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes(SettingsService.AppFolder.ToLowerInvariant())))[..12];
+
+        // I only ever want one copy open per folder so two windows can't overwrite each other's saves
+        _instanceMutex = new Mutex(true, InstanceName + suffix, out var isFirst);
+        _showSignal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowSignalName + suffix);
         if (!isFirst)
         {
             Log.Info("App", "Kaydence is already running, bringing that copy to the front and closing this one");
@@ -45,6 +51,7 @@ public partial class App : Application
         }
 
         Log.StartSession(e.Args);
+        if (home != null) Log.Info("App", $"Using the folder given with --home: {SettingsService.AppFolder}");
         base.OnStartup(e);
         DispatcherUnhandledException += OnUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
@@ -191,6 +198,12 @@ public partial class App : Application
         Log.Info("App", "Start up finished");
     }
 
+    private static string? HomeFrom(string[] args)
+    {
+        var at = Array.FindIndex(args, a => a.Equals("--home", StringComparison.OrdinalIgnoreCase));
+        return at >= 0 && at + 1 < args.Length && args[at + 1].Trim().Length > 0 ? args[at + 1].Trim().TrimEnd('\\', '/') : null;
+    }
+
     // I let go of my single copy lock, start a fresh copy of myself, then close this one
     public void Restart()
     {
@@ -206,7 +219,13 @@ public partial class App : Application
         _instanceMutex = null;
 
         Log.Info("App", "Restarting");
-        if (Environment.ProcessPath is { } path) Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+        if (Environment.ProcessPath is { } path)
+        {
+            // I pass my own arguments on so a restart stays in the same folder
+            var start = new ProcessStartInfo(path) { UseShellExecute = false };
+            foreach (var arg in Environment.GetCommandLineArgs().Skip(1)) start.ArgumentList.Add(arg);
+            Process.Start(start);
+        }
         Shutdown();
     }
 

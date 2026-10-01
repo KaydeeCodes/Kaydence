@@ -109,7 +109,7 @@ When the password is on, every file in the Diary folder except `keys.json` is se
 
 ## Recovery file
 
-A `.kaydencekey` file is a small JSON file holding a random 256 bit secret, written as base64 in its `Key` field. That secret on its own (for example pasted from a password manager) works just as well as the file.
+A `.kaydencekey` file is a small JSON file holding a random 256 bit secret, written as base64 in its `Key` field. Kaydence reads the `Key` field when the file is chosen on the lock screen.
 
 ## Logs
 

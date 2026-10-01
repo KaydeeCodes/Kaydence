@@ -1,4 +1,5 @@
 using System.IO;
+using System.IO.Compression;
 using System.Windows;
 
 namespace Kaydence.Services;
@@ -71,27 +72,30 @@ public static class EncryptionService
         }
 
         Log.Info("Crypto", "Switching encryption on");
-        var hadOldBackups = Directory.Exists(settings.BackupFolderOrDefault)
-                            && Directory.EnumerateFiles(settings.BackupFolderOrDefault, "Kaydence-*.zip").Any();
-
         UseKey(KeyStore.CreateNew(settings.DataFolder, password));
         RecoveryService.Clear(settings);
         SettingsService.Save(settings);
         Run(owner, settings.DataFolder, true);
         UpdateDeviceKey(settings);
+        var oldBackups = TidyOldBackups(settings);
 
-        MessageBox.Show(owner,
-            "Your diary is now encrypted. Nobody can read it without your password, even by opening the files directly.\n\n" +
-            "Your password is now the only way in, so next you'll save a recovery file. It's your spare key if you ever forget your password. " +
-            "Any older recovery file won't work any more.",
-            "Kaydence", MessageBoxButton.OK, MessageBoxImage.Information);
-        if (!RecoveryService.CreateAndSave(owner, settings))
+        // I go straight to saving the recovery file, then say it's all done in one message
+        if (RecoveryService.CreateAndSave(owner, settings))
         {
-            MessageBox.Show(owner, "No recovery file was saved. You can make one any time in Settings, Privacy and lock.\n\nWithout one, a forgotten password means your diary can't be opened.",
-                "Kaydence", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(owner,
+                "Your diary is now locked with your password, and your recovery file is saved.\n\n" +
+                "Keep the recovery file somewhere safe and private. It's the only way back in if you forget your password.",
+                "Password set", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        else
+        {
+            MessageBox.Show(owner,
+                "Your diary is now locked with your password, but no recovery file was saved.\n\n" +
+                "Without one, a forgotten password means your diary can't be opened. You can make one any time in Settings, Privacy and lock.",
+                "Password set", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        if (hadOldBackups) OfferToReplaceOldBackups(owner, settings);
+        if (oldBackups.Count > 0) OfferToDeleteOldBackups(owner, oldBackups);
     }
 
     // I put every file back to normal and throw the lock away when I switch my password off
@@ -151,27 +155,84 @@ public static class EncryptionService
         }
     }
 
-    // I make a fresh encrypted backup and offer to delete the old ones that anyone could still read
-    private static void OfferToReplaceOldBackups(Window owner, AppSettings settings)
+    // I make a fresh locked backup, quietly remove old unlocked ones that hold no days, and hand back any that do hold days
+    private static List<string> TidyOldBackups(AppSettings settings)
     {
-        var answer = MessageBox.Show(owner,
-            "Your older backups were made before encryption, so anyone with access to this PC could still open them.\n\n" +
-            "Make a new encrypted backup now and delete the old ones?",
-            "Old backups", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (answer != MessageBoxResult.Yes) return;
+        var folder = settings.BackupFolderOrDefault;
         try
         {
-            var fresh = BackupService.RunNow(settings.DataFolder, settings.BackupFolderOrDefault, settings.BackupKeepDays);
-            foreach (var old in Directory.GetFiles(settings.BackupFolderOrDefault, "Kaydence-*.zip"))
+            if (!Directory.Exists(folder)) return new List<string>();
+            var unlocked = Directory.GetFiles(folder, "Kaydence-*.zip").Where(f => !IsLockedBackup(f)).ToList();
+            if (unlocked.Count == 0) return new List<string>();
+
+            BackupService.RunNow(settings.DataFolder, folder, settings.BackupKeepDays);
+            var withDays = new List<string>();
+            foreach (var zip in unlocked)
             {
-                if (!string.Equals(old, fresh, StringComparison.OrdinalIgnoreCase)) File.Delete(old);
+                if (HoldsDays(zip))
+                {
+                    withDays.Add(zip);
+                    continue;
+                }
+                File.Delete(zip);
+                Log.Info("Crypto", $"Removed {Path.GetFileName(zip)}, an unlocked backup with no days in it");
             }
+            Log.Info("Crypto", $"Made a locked backup, {withDays.Count} older unlocked backups still hold days");
+            return withDays;
         }
         catch (Exception ex)
         {
-            Log.Error("Crypto", "Replacing the old backups went wrong", ex);
-            MessageBox.Show(owner, $"Something went wrong tidying the backups, so some old ones may still be there.\n\n{ex.Message}",
-                "Kaydence", MessageBoxButton.OK, MessageBoxImage.Warning);
+            Log.Error("Crypto", "Tidying the old backups went wrong", ex);
+            return new List<string>();
         }
+    }
+
+    private static bool IsLockedBackup(string zip)
+    {
+        try
+        {
+            using var archive = ZipFile.OpenRead(zip);
+            return archive.Entries.Any(e => e.FullName.Equals("keys.json", StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception)
+        {
+            // I treat a backup I can't open as unlocked, but I never delete it without asking
+            return false;
+        }
+    }
+
+    private static bool HoldsDays(string zip)
+    {
+        try
+        {
+            using var archive = ZipFile.OpenRead(zip);
+            return archive.Entries.Any(e => e.Name.Equals("day.json", StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception)
+        {
+            return true;
+        }
+    }
+
+    // I only ask about old backups that really have diary days in them, because anyone using this PC could still open those
+    private static void OfferToDeleteOldBackups(Window owner, List<string> backups)
+    {
+        var answer = MessageBox.Show(owner,
+            $"You have {backups.Count} older {(backups.Count == 1 ? "backup" : "backups")} from before your password was set, so anyone using this PC could still read {(backups.Count == 1 ? "it" : "them")}. " +
+            "A new locked backup has just been made.\n\nDelete the old unlocked ones?",
+            "Old backups", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (answer != MessageBoxResult.Yes) return;
+        foreach (var zip in backups)
+        {
+            try
+            {
+                File.Delete(zip);
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("Crypto", $"Couldn't delete {Path.GetFileName(zip)}", ex);
+            }
+        }
+        Log.Info("Crypto", $"Deleted {backups.Count} old unlocked backups");
     }
 }

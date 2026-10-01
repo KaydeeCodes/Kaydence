@@ -28,7 +28,7 @@ Kaydence is ready for everyone. Here's what it does:
 
 **Keeping it safe**
 - An optional password that encrypts every file in your diary with AES-256
-- A recovery file as a spare key, which can also be copied into a password manager and is cleared from the clipboard after a minute
+- A recovery file as a spare key, saved straight after you set a password
 - Daily backups, a backup folder of your choice, and one click restore
 - Export everything to a web page, text files, photos and voice notes, or a single PDF
 - Photos are cleaned when you add them, leaving behind hidden location and camera details, and turned the right way up

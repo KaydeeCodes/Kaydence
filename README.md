@@ -84,9 +84,9 @@ This folder isn't synced to OneDrive or any cloud service. The [data format](doc
 
 A password is optional. When you switch it on, Kaydence encrypts **every file in your diary** (pages, photos, voice notes and check-ins) with AES-256. Someone who copies your diary folder or takes your hard drive sees only scrambled data.
 
-When you set a password, Kaydence asks you to save a **recovery file** (it ends in `.kaydencekey`). It's the spare key for your diary. If you forget your password, the recovery file lets you in and you choose a new one. You can also copy the recovery key into a password manager.
+When you set a password, Kaydence asks you to save a **recovery file** (it ends in `.kaydencekey`). It's the spare key for your diary. If you forget your password, the recovery file lets you in and you choose a new one.
 
-> **Please keep your recovery file safe.** There's no back door. If you lose both your password and your recovery file, nobody can open your diary, including the developer. Keep the recovery file somewhere other than your PC, like a USB stick or a password manager.
+> **Please keep your recovery file safe.** There's no back door. If you lose both your password and your recovery file, nobody can open your diary, including the developer. Keep the recovery file somewhere other than your PC, like a USB stick.
 
 ## Backups
 
@@ -121,7 +121,7 @@ Not at the moment. Kaydence is made for Windows 10 and 11.
 Not at the same time yet. To move to a new PC, make a backup in Settings, copy the zip across, install Kaydence and use Restore. Your password or recovery file opens it on the new PC.
 
 **I forgot my password.**
-On the lock screen, click "Forgot your password? Use your recovery file" and choose the file, or paste the key from your password manager. Without either, an encrypted diary can't be opened.
+On the lock screen, click "Forgot your password? Use your recovery file" and choose the file. Without your password or the recovery file, an encrypted diary can't be opened.
 
 **Is my diary really private if Kaydence is on GitHub?**
 Your diary is never on GitHub. Only Kaydence's code is. Your diary only ever lives in `%LocalAppData%\Kaydence` on your own PC.

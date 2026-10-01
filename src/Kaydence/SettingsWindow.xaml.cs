@@ -390,7 +390,7 @@ public partial class SettingsWindow : Window
                 MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (answer != MessageBoxResult.Yes) return;
         }
-        RecoveryService.CreateAndSave(this, _s);
+        if (RecoveryService.CreateAndSave(this, _s)) RecoveryService.ShowSaved(this);
         UpdatePrivacyRows();
     }
 

@@ -30,7 +30,7 @@ public static class RecoveryService
     {
         var dialog = new SaveFileDialog
         {
-            Title = "Save your Kaydence recovery file",
+            Title = "Save your recovery file, the spare key for your diary",
             FileName = $"Kaydence recovery {DateTime.Now:yyyy-MM-dd}",
             DefaultExt = Extension,
             AddExtension = true,
@@ -52,7 +52,6 @@ public static class RecoveryService
             settings.RecoveryCreated = DateTime.Now;
             SettingsService.Save(settings);
             Log.Info("Recovery", "Saved a new recovery file");
-            OfferToCopy(owner, key);
             return true;
         }
         catch (Exception ex)
@@ -64,19 +63,9 @@ public static class RecoveryService
         }
     }
 
-    // I tell someone the file is saved, and offer to copy the key for a password manager, wiping it from the clipboard after a minute
-    private static void OfferToCopy(Window owner, string key)
-    {
-        var answer = MessageBox.Show(owner,
-            "Your recovery file is saved. Keep it somewhere safe and private, anyone who has it can reset your password.\n\n" +
-            "Would you also like to copy the recovery key, so you can paste it into a password manager? Kaydence clears it from the clipboard after one minute.",
-            "Recovery file saved", MessageBoxButton.YesNo, MessageBoxImage.Information);
-        if (answer == MessageBoxResult.Yes && !ClipboardGuard.CopySecret(key, TimeSpan.FromMinutes(1)))
-        {
-            MessageBox.Show(owner, "The clipboard is busy with another app, so the key wasn't copied. The recovery file still works.",
-                "Kaydence", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-    }
+    public static void ShowSaved(Window owner) =>
+        MessageBox.Show(owner, "Your recovery file is saved. Keep it somewhere safe and private, anyone who has it can reset your password.",
+            "Recovery file saved", MessageBoxButton.OK, MessageBoxImage.Information);
 
     // I accept either a whole recovery file or just the key on its own
     public static string? KeyFrom(string text)
@@ -103,24 +92,44 @@ public static class RecoveryService
         }
     }
 
-    // I let someone choose their recovery file or paste its key, then check it matches this diary
+    // I let someone choose their recovery file, then check it matches this diary
     public static bool TryUse(Window owner, AppSettings settings, out string problem, out string? key)
     {
         problem = "";
         key = null;
-        var prompt = new Kaydence.RecoveryPromptWindow(owner);
-        if (prompt.ShowDialog() != true || prompt.Key == null) return false;
+        var dialog = new OpenFileDialog
+        {
+            Title = "Choose your Kaydence recovery file",
+            Filter = $"Kaydence recovery file|*{Extension}|All files|*.*"
+        };
+        if (dialog.ShowDialog(owner) != true) return false;
+
+        string? found;
+        try
+        {
+            found = KeyFrom(File.ReadAllText(dialog.FileName));
+        }
+        catch (Exception ex)
+        {
+            Log.Warn("Recovery", "The chosen file couldn't be read", ex);
+            found = null;
+        }
+        if (string.IsNullOrWhiteSpace(found))
+        {
+            problem = "That file isn't a Kaydence recovery file.";
+            return false;
+        }
 
         var matches = EncryptionService.IsEncrypted(settings)
-            ? KeyStore.UnlockWithRecovery(settings.DataFolder, prompt.Key) != null
-            : PasswordService.Verify(prompt.Key, settings.RecoveryHash, settings.RecoverySalt);
-        Log.Info("Recovery", $"Recovery key checked, matches: {matches}");
+            ? KeyStore.UnlockWithRecovery(settings.DataFolder, found) != null
+            : PasswordService.Verify(found, settings.RecoveryHash, settings.RecoverySalt);
+        Log.Info("Recovery", $"Recovery file checked, matches: {matches}");
         if (matches)
         {
-            key = prompt.Key;
+            key = found;
             return true;
         }
-        problem = "That recovery key doesn't match this diary. It might be an older one from before a new file was made.";
+        problem = "That recovery file doesn't match this diary. It might be an older one from before a new file was made.";
         return false;
     }
 
@@ -139,6 +148,6 @@ public static class RecoveryService
             "Keep it somewhere safe and private, like a USB stick.",
             "Save a recovery file", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (answer != MessageBoxResult.Yes) return;
-        CreateAndSave(owner, settings);
+        if (CreateAndSave(owner, settings)) ShowSaved(owner);
     }
 }

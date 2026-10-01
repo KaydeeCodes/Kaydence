@@ -231,7 +231,6 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        ClipboardGuard.ClearNow("Kaydence is closing");
         Log.EndSession($"exit code {e.ApplicationExitCode}");
         _waitingTray?.Dispose();
         try

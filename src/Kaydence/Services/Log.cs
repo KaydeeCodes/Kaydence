@@ -130,7 +130,8 @@ public static class Log
 #else
         const string config = "Release";
 #endif
-        var singleFile = string.IsNullOrEmpty(Assembly.GetExecutingAssembly().Location) ? ", single file" : "";
+        // I spot a single file build by the missing dll next to the exe
+        var singleFile = File.Exists(Path.Combine(AppContext.BaseDirectory, "Kaydence.dll")) ? "" : ", single file";
         return config + singleFile;
     }
 

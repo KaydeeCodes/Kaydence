@@ -527,8 +527,8 @@
         <li>Switch on <b>Lock with a password</b>.</li>
         <li>Type your password twice and click <b>Save</b>. It needs at least 4 characters.</li>
         <li>Kaydence encrypts your whole diary. A small window shows the progress, it only takes a moment.</li>
-        <li>Kaydence asks you to save a <a href="#recovery">recovery file</a>. Please do. It's the only way back in if you ever forget your password.</li>
-        <li>If you had backups from before, Kaydence offers to make a new encrypted backup and delete the old ones, because the old ones could still be read.</li>
+        <li>Choose where to save your <a href="#recovery">recovery file</a>. Please do. It's the only way back in if you ever forget your password.</li>
+        <li>That's it. Kaydence also makes a fresh locked backup. If you have older backups with diary days in them from before the password, it asks whether to delete them, because anyone using the PC could still read those.</li>
       </ol>
       <h3>When it asks for your password</h3>
       <table>
@@ -550,13 +550,11 @@
       <h2>Recovery file</h2>
       <p>A recovery file is the spare key for your encrypted diary. If you forget your password, it's the only way to open your diary and choose a new password.</p>
       <h3>Saving one</h3>
-      <p>Kaydence offers to save one as soon as you set a password. You can also make one any time in <b>Settings, Privacy and lock, Recovery file</b>, then <b>Make a new one</b>. Pick where to save it and you're done. The file ends in <code>.kaydencekey</code>.</p>
-      <h3>Keeping the key in a password manager</h3>
-      <p>Straight after saving a recovery file, Kaydence offers to copy the recovery key so you can paste it into a password manager. If you say yes, Kaydence clears it from the clipboard after one minute, or when Kaydence closes, so it isn't left lying around.</p>
+      <p>Kaydence asks you to save one as soon as you set a password. You can also make one any time in <b>Settings, Privacy and lock, Recovery file</b>, then <b>Make a new one</b>. Pick where to save it and you're done. The file ends in <code>.kaydencekey</code>.</p>
       <h3>Where to keep it</h3>
       <ul>
         <li>A USB stick you keep somewhere safe is ideal.</li>
-        <li>A private cloud folder or a password manager also works.</li>
+        <li>A second copy somewhere private, like a folder on another computer, also works.</li>
         <li>Don't keep your only copy on the same PC. If the PC breaks, you want the recovery file somewhere else.</li>
       </ul>
       <div class="box warn"><b>Treat it like a key</b>Anyone who has your recovery file and a copy of your diary or a backup can open it. Keep it private, and never keep it in the same place as your backups.</div>
@@ -569,14 +567,14 @@
       <h3>With your recovery file</h3>
       <ol class="steps">
         <li>On the lock screen, click <b>Forgot your password? Use your recovery file</b>.</li>
-        <li>Click <b>Choose the recovery file</b> and pick your <code>.kaydencekey</code> file. Or, if you kept the key in a password manager, paste it into the box and click <b>Use this key</b>.</li>
+        <li>Find and choose your <code>.kaydencekey</code> file.</li>
         <li>Choose a new password and type it twice.</li>
         <li>Kaydence unlocks. Your recovery file still works for next time.</li>
       </ol>
       <p>If Kaydence says the file doesn't match, it's probably an older recovery file from before you made a new one. Try any newer copy you have.</p>
       <p>On the lock screen, or in the small window that asks for your password when Kaydence starts, it works the same way.</p>
       <h3>Without a recovery file</h3>
-      <p>If your diary is encrypted, a forgotten password without a recovery file can't be worked around. That's what keeps your diary safe from everyone else too. Try any passwords you might have used, and check any older copies of your recovery file on USB sticks or in a password manager.</p>
+      <p>If your diary is encrypted, a forgotten password without a recovery file can't be worked around. That's what keeps your diary safe from everyone else too. Try any passwords you might have used, and check for copies of your recovery file on USB sticks or other computers.</p>
       <p>If you set a password but chose not to encrypt when Kaydence asked, your files aren't encrypted, so you can still switch the password off by hand: close Kaydence completely, open <code>%LocalAppData%\Kaydence\settings.json</code> in Notepad, change <code>"PasswordEnabled": true</code> to <code>false</code>, save, and open Kaydence again.</p>
     </section>
 

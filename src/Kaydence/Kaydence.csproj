@@ -12,6 +12,8 @@
     <AssemblyName>Kaydence</AssemblyName>
     <ApplicationIcon>Assets\Kaydence.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- I set the screen scaling in app.manifest for WPF, so I don't need the Windows Forms reminder about it -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
     <Version>1.0.0</Version>
     <Product>Kaydence</Product>
     <Company>KaydeeCodes</Company>
@@ -24,11 +26,6 @@
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />
-  </ItemGroup>
-
-  <!-- I use the newer Windows pointer input for drawing, the older one puts strokes in the wrong place on monitors with different scaling -->
-  <ItemGroup>
-    <RuntimeHostConfigurationOption Include="Switch.System.Windows.Input.Stylus.EnablePointerSupport" Value="true" />
   </ItemGroup>
 
   <ItemGroup>

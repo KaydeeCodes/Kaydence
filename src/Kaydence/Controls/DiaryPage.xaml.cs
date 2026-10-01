@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -91,6 +92,14 @@ public partial class DiaryPage : UserControl
         Ink.PreviewMouseLeftButtonDown += Ink_ShapeDown;
         Ink.PreviewMouseMove += Ink_ShapeMove;
         Ink.PreviewMouseLeftButtonUp += Ink_ShapeUp;
+        Ink.PreviewMouseLeftButtonDown += Ink_MouseStrokeDown;
+        Ink.PreviewMouseMove += Ink_MouseStrokeMove;
+        Ink.PreviewMouseLeftButtonUp += Ink_MouseStrokeUp;
+        Ink.LostMouseCapture += (_, _) => FinishMouseStroke();
+        Ink.PreviewMouseLeftButtonDown += Ink_LassoDown;
+        Ink.PreviewMouseMove += Ink_LassoMove;
+        Ink.PreviewMouseLeftButtonUp += Ink_LassoUp;
+        Ink.LostMouseCapture += (_, _) => FinishLasso();
         Ink.PreviewMouseLeftButtonDown += (_, e) => _inputKind = e.StylusDevice == null ? "mouse" : $"{e.StylusDevice.TabletDevice?.Type.ToString() ?? "stylus"} as mouse";
         Ink.PreviewStylusDown += (_, e) => _inputKind = e.StylusDevice.TabletDevice?.Type.ToString() ?? "stylus";
         Ink.StrokeCollected += (_, e) => DescribeStroke(e.Stroke);
@@ -520,7 +529,7 @@ public partial class DiaryPage : UserControl
     private void Ink_ShapeDown(object sender, MouseButtonEventArgs e)
     {
         if (_tool != PageTool.Shape) return;
-        _shapeStart = e.GetPosition(Ink);
+        _shapeStart = CursorOn(Ink, e);
         _drawingShape = true;
         Ink.CaptureMouse();
         e.Handled = true;
@@ -529,7 +538,7 @@ public partial class DiaryPage : UserControl
     private void Ink_ShapeMove(object sender, MouseEventArgs e)
     {
         if (!_drawingShape) return;
-        var lines = ShapeLines(_shapeStart, e.GetPosition(Ink), Keyboard.Modifiers.HasFlag(ModifierKeys.Shift));
+        var lines = ShapeLines(_shapeStart, CursorOn(Ink, e), Keyboard.Modifiers.HasFlag(ModifierKeys.Shift));
         var geometry = new PathGeometry();
         foreach (var line in lines)
         {
@@ -548,7 +557,7 @@ public partial class DiaryPage : UserControl
         Ink.ReleaseMouseCapture();
         ShapePreview.Data = null;
 
-        var end = e.GetPosition(Ink);
+        var end = CursorOn(Ink, e);
         if (Math.Abs(end.X - _shapeStart.X) < 3 && Math.Abs(end.Y - _shapeStart.Y) < 3) return;
 
         // I turn my shape into normal ink so the eraser, lasso and undo all work on it
@@ -1000,6 +1009,182 @@ public partial class DiaryPage : UserControl
     }
 
     private string _inputKind = "unknown";
+    private int _strayPoints;
+    private int _droppedPoints;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct CursorPoint
+    {
+        public int X;
+        public int Y;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool GetCursorPos(out CursorPoint point);
+
+    // I ask Windows where the cursor really is, because on some PCs the mouse messages carry stray positions far off the page
+    private Point CursorOn(UIElement target, MouseEventArgs e)
+    {
+        var reported = e.GetPosition(target);
+        try
+        {
+            if (!GetCursorPos(out var cursor) || PresentationSource.FromVisual(target) == null) return reported;
+            var real = target.PointFromScreen(new Point(cursor.X, cursor.Y));
+            if (Math.Abs(real.X - reported.X) > 40 || Math.Abs(real.Y - reported.Y) > 40) _strayPoints++;
+            return real;
+        }
+        catch (Exception)
+        {
+            // I fall back to the normal position if Windows can't tell me
+            return reported;
+        }
+    }
+    private List<Point>? _mousePoints;
+    private PolyLineSegment? _mouseLine;
+    private DrawingAttributes? _mouseAttributes;
+
+    // I draw mouse strokes myself from the plain mouse position, because the built in mouse ink can throw stray points across the page on some monitor layouts
+    private void Ink_MouseStrokeDown(object sender, MouseButtonEventArgs e)
+    {
+        if (_tool is not (PageTool.Pen or PageTool.Highlighter) || e.StylusDevice != null) return;
+        _strayPoints = 0;
+        _droppedPoints = 0;
+        var start = CursorOn(Ink, e);
+        _mouseAttributes = Ink.DefaultDrawingAttributes.Clone();
+        _mousePoints = new List<Point> { start };
+        _mouseLine = new PolyLineSegment();
+        var figure = new PathFigure { StartPoint = start, IsFilled = false };
+        figure.Segments.Add(_mouseLine);
+        ShapePreview.Data = new PathGeometry(new[] { figure });
+        var colour = _mouseAttributes.Color;
+        ShapePreview.Stroke = new SolidColorBrush(_mouseAttributes.IsHighlighter ? Color.FromArgb(0x80, colour.R, colour.G, colour.B) : colour);
+        ShapePreview.StrokeThickness = _mouseAttributes.IsHighlighter ? _mouseAttributes.Height : _mouseAttributes.Width;
+
+        // I stop the built in ink from collecting this stroke as well
+        Ink.EditingMode = InkCanvasEditingMode.None;
+        Ink.CaptureMouse();
+        e.Handled = true;
+    }
+
+    private void Ink_MouseStrokeMove(object sender, MouseEventArgs e)
+    {
+        if (_mousePoints == null || _mouseLine == null) return;
+        var point = CursorOn(Ink, e);
+        var last = _mousePoints[^1];
+        if (Math.Abs(point.X - last.X) < 0.5 && Math.Abs(point.Y - last.Y) < 0.5) return;
+        // I skip any point that leaps further than a hand could move between two mouse updates
+        if (Math.Abs(point.X - last.X) > 300 || Math.Abs(point.Y - last.Y) > 300)
+        {
+            _droppedPoints++;
+            e.Handled = true;
+            return;
+        }
+        _mousePoints.Add(point);
+        _mouseLine.Points.Add(point);
+        e.Handled = true;
+    }
+
+    private void Ink_MouseStrokeUp(object sender, MouseButtonEventArgs e)
+    {
+        if (_mousePoints == null) return;
+        var end = CursorOn(Ink, e);
+        var previous = _mousePoints[^1];
+        if (Math.Abs(end.X - previous.X) <= 300 && Math.Abs(end.Y - previous.Y) <= 300) _mousePoints.Add(end);
+        FinishMouseStroke();
+        e.Handled = true;
+    }
+
+    private List<Point>? _lassoPoints;
+    private PolyLineSegment? _lassoLine;
+
+    // I draw the lasso loop myself from the real cursor position too, then let the built in handles move and resize what it picked up
+    private void Ink_LassoDown(object sender, MouseButtonEventArgs e)
+    {
+        if (_tool != PageTool.Lasso || e.StylusDevice != null) return;
+        var start = CursorOn(Ink, e);
+        if (Ink.GetSelectedStrokes().Count > 0)
+        {
+            var bounds = Ink.GetSelectionBounds();
+            bounds.Inflate(12, 12);
+            if (bounds.Contains(start)) return;
+        }
+
+        _strayPoints = 0;
+        _droppedPoints = 0;
+        _lassoPoints = new List<Point> { start };
+        _lassoLine = new PolyLineSegment();
+        var figure = new PathFigure { StartPoint = start, IsFilled = false };
+        figure.Segments.Add(_lassoLine);
+        ShapePreview.Data = new PathGeometry(new[] { figure });
+        ShapePreview.SetResourceReference(System.Windows.Shapes.Shape.StrokeProperty, "Brush.Accent");
+        ShapePreview.StrokeThickness = 1.5;
+        ShapePreview.StrokeDashArray = new DoubleCollection { 4, 3 };
+
+        Ink.EditingMode = InkCanvasEditingMode.None;
+        Ink.CaptureMouse();
+        e.Handled = true;
+    }
+
+    private void Ink_LassoMove(object sender, MouseEventArgs e)
+    {
+        if (_lassoPoints == null || _lassoLine == null) return;
+        var point = CursorOn(Ink, e);
+        var last = _lassoPoints[^1];
+        e.Handled = true;
+        if (Math.Abs(point.X - last.X) < 1 && Math.Abs(point.Y - last.Y) < 1) return;
+        if (Math.Abs(point.X - last.X) > 300 || Math.Abs(point.Y - last.Y) > 300)
+        {
+            _droppedPoints++;
+            return;
+        }
+        _lassoPoints.Add(point);
+        _lassoLine.Points.Add(point);
+    }
+
+    private void Ink_LassoUp(object sender, MouseButtonEventArgs e)
+    {
+        if (_lassoPoints == null) return;
+        FinishLasso();
+        e.Handled = true;
+    }
+
+    private void FinishLasso()
+    {
+        var points = _lassoPoints;
+        if (points == null) return;
+        _lassoPoints = null;
+        _lassoLine = null;
+        if (Ink.IsMouseCaptured) Ink.ReleaseMouseCapture();
+        ShapePreview.Data = null;
+        ShapePreview.StrokeDashArray = null;
+        ApplyTool();
+
+        // I pick up every drawing that sits mostly inside the loop, and a plain click clears the selection
+        var picked = points.Count >= 3 ? Ink.Strokes.HitTest(points, 70) : new StrokeCollection();
+        Ink.Select(picked);
+        Log.Debug("Ink", $"Lasso from mouse: {points.Count} points, picked up {picked.Count} strokes, {_strayPoints} stray mouse positions corrected, {_droppedPoints} leaps skipped");
+    }
+
+    private void FinishMouseStroke()
+    {
+        var points = _mousePoints;
+        var attributes = _mouseAttributes;
+        if (points == null || attributes == null) return;
+        _mousePoints = null;
+        _mouseLine = null;
+        _mouseAttributes = null;
+        if (Ink.IsMouseCaptured) Ink.ReleaseMouseCapture();
+        ShapePreview.Data = null;
+        ApplyTool();
+
+        // I make a single click into a small dot
+        if (points.Count == 1) points.Add(new Point(points[0].X + 0.5, points[0].Y + 0.5));
+        var stroke = new Stroke(new StylusPointCollection(points), attributes);
+        Ink.Strokes.Add(stroke);
+        _inputKind = $"mouse, drawn by Kaydence, {_strayPoints} stray mouse positions corrected, {_droppedPoints} leaps skipped";
+        DescribeStroke(stroke);
+    }
+
 
     // I note the shape of each new stroke, never what it looks like, so a stroke that jumps across the page is easy to spot in the log
     private void DescribeStroke(Stroke stroke)

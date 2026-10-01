@@ -1,0 +1,13 @@
+<UserControl x:Class="Kaydence.Controls.MemoriesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Style="{StaticResource PageScrollViewer}" Focusable="False"
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <!-- My memories: this day in past years, and every milestone I've marked -->
+        <StackPanel Margin="28,22,28,32" MaxWidth="1100" HorizontalAlignment="Left">
+            <TextBlock Text="Memories" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+            <TextBlock Text="Looking back at the moments that matter to you" FontSize="13" Foreground="{DynamicResource Brush.TextMuted}"/>
+            <StackPanel x:Name="Body"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

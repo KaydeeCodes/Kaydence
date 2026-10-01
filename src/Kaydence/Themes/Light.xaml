@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- My light colours, soft lilac with white paper -->
+    <SolidColorBrush x:Key="Brush.Window" Color="#F5F2FA"/>
+    <SolidColorBrush x:Key="Brush.Rail" Color="#EEE9F7"/>
+    <SolidColorBrush x:Key="Brush.Sidebar" Color="#EEE9F7"/>
+    <SolidColorBrush x:Key="Brush.Page" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Panel" Color="#F8F5FC"/>
+    <SolidColorBrush x:Key="Brush.Card" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Border" Color="#E2DAEF"/>
+    <SolidColorBrush x:Key="Brush.Text" Color="#2A2438"/>
+    <SolidColorBrush x:Key="Brush.TextMuted" Color="#6F6784"/>
+    <SolidColorBrush x:Key="Brush.TextFaint" Color="#A69FB8"/>
+    <SolidColorBrush x:Key="Brush.Accent" Color="#7B4FB8"/>
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#EEE5FA"/>
+    <SolidColorBrush x:Key="Brush.OnAccent" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Hover" Color="#ECE5F7"/>
+    <SolidColorBrush x:Key="Brush.Input" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Selection" Color="#7B4FB8"/>
+    <SolidColorBrush x:Key="Brush.ScrollThumb" Color="#CFC6DE"/>
+</ResourceDictionary>

@@ -1,0 +1,60 @@
+<UserControl x:Class="Kaydence.Controls.PageVoiceItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="330" Focusable="True" FocusVisualStyle="{x:Null}">
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Save a copy as a sound file..." Click="Export_Click"/>
+                <Separator/>
+                <MenuItem Header="Bring to front" Click="Front_Click"/>
+                <MenuItem Header="Send to back" Click="Back_Click"/>
+                <Separator/>
+                <MenuItem Header="Delete this voice note" Click="Delete_Click"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+        <!-- My grab bar for dragging the voice note around -->
+        <Thumb x:Name="MoveThumb" Grid.Row="0" Style="{StaticResource GripThumb}" Cursor="SizeAll" Opacity="0"/>
+
+        <!-- My speech bubble with a play button, the waveform and the time, like a WhatsApp voice note -->
+        <Border x:Name="Bubble" Grid.Row="1" CornerRadius="24" Padding="6,6,16,6" BorderThickness="1"
+                Background="{DynamicResource Brush.AccentSoft}" BorderBrush="{DynamicResource Brush.Border}">
+            <DockPanel>
+                <Button x:Name="PlayButton" DockPanel.Dock="Left" Width="38" Height="38" Focusable="False" Cursor="Hand"
+                        ToolTip="Play or pause (Space)" Click="Play_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Ellipse x:Name="Round" Fill="{DynamicResource Brush.Accent}"/>
+                                <TextBlock x:Name="Glyph" Text="{TemplateBinding Content}" FontFamily="{StaticResource Font.Icons}" FontSize="15"
+                                           Foreground="{DynamicResource Brush.OnAccent}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Round" Property="Opacity" Value="0.85"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10,0,0,0">
+                    <TextBlock x:Name="TimeText" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}" HorizontalAlignment="Right"/>
+                    <TextBlock Text="&#xE720;" FontFamily="{StaticResource Font.Icons}" FontSize="11" Margin="0,2,0,0"
+                               Foreground="{DynamicResource Brush.TextFaint}" HorizontalAlignment="Right"/>
+                </StackPanel>
+                <Grid x:Name="WaveHost" Margin="10,0,0,0" Height="32" Background="Transparent" Cursor="Hand"
+                      MouseLeftButtonDown="Wave_MouseLeftButtonDown" ToolTip="Click to jump to that part">
+                    <StackPanel x:Name="WaveBars" Orientation="Horizontal" VerticalAlignment="Center"/>
+                </Grid>
+            </DockPanel>
+        </Border>
+
+        <Border x:Name="Frame" Grid.Row="1" Margin="-3" BorderThickness="2" CornerRadius="27"
+                BorderBrush="{DynamicResource Brush.Accent}" Opacity="0" IsHitTestVisible="False"/>
+    </Grid>
+</UserControl>

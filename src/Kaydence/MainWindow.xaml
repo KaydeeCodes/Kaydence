@@ -1,0 +1,355 @@
+<Window x:Class="Kaydence.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:Kaydence.Controls"
+        Title="Kaydence"
+        Width="1380" Height="860" MinWidth="1060" MinHeight="620"
+        Icon="/Assets/Kaydence.ico"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Brush.Window}"
+        Foreground="{DynamicResource Brush.Text}"
+        FontFamily="{StaticResource Font.UI}"
+        UseLayoutRounding="True">
+    <Grid>
+        <Grid x:Name="Shell">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- My icon rail down the far left for switching screens, like new Outlook -->
+            <Border Grid.Column="0" Width="72" Background="{DynamicResource Brush.Rail}"
+                    BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+                <DockPanel Margin="0,14,0,10">
+                    <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center">
+                        <RadioButton x:Name="NavDay" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xE8BF;"
+                                     Content="Day" IsChecked="True" Checked="Nav_Checked" ToolTip="Your page for the day"/>
+                        <RadioButton x:Name="NavWeek" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xE8C0;"
+                                     Content="Week" Checked="Nav_Checked" ToolTip="Seven days side by side"/>
+                        <RadioButton x:Name="NavMonth" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xE787;"
+                                     Content="Month" Checked="Nav_Checked" ToolTip="The whole month by mood"/>
+                        <RadioButton x:Name="NavMemories" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xEB51;"
+                                     Content="Memories" Checked="Nav_Checked" ToolTip="On this day and your milestones"/>
+                        <RadioButton x:Name="NavInsights" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xE9D2;"
+                                     Content="Insights" Checked="Nav_Checked" ToolTip="Charts of your mood, sleep and health, and your year in pixels"/>
+                        <RadioButton x:Name="NavSearch" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xE721;"
+                                     Content="Search" Checked="Nav_Checked" ToolTip="Search your diary (Ctrl+F)"/>
+                        <RadioButton x:Name="NavPrint" GroupName="Views" Style="{StaticResource RailButton}" Tag="&#xE749;"
+                                     Content="Print" Checked="Nav_Checked" ToolTip="Print or save as PDF (Ctrl+P)"/>
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                        <Button x:Name="LockButton" Style="{StaticResource RailAction}" Tag="&#xE72E;" Content="Lock"
+                                Visibility="Collapsed" Click="Lock_Click" ToolTip="Lock Kaydence now (Ctrl+L)"/>
+                        <Button Style="{StaticResource RailAction}" Tag="&#xE713;" Content="Settings" Click="Settings_Click"
+                                ToolTip="Settings"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Grid Grid.Column="1">
+                <!-- My day screen: calendar, page and check-in -->
+                <Grid x:Name="DayScreen">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="272"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition x:Name="CheckInColumn" Width="360"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- My sidebar with the logo, month calendar and quick buttons -->
+                    <Border Grid.Column="0" Background="{DynamicResource Brush.Sidebar}"
+                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+                        <DockPanel Margin="18,20,18,14">
+                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="2,0,0,22">
+                                <Image Source="/Assets/Kaydence.png" Width="36" Height="36" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <StackPanel Margin="11,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="Kaydence" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+                                    <TextBlock FontSize="11" Foreground="{DynamicResource Brush.TextMuted}">
+                                        <Run Text="by "/><Hyperlink NavigateUri="https://kaydee.codes" RequestNavigate="Website_RequestNavigate"
+                                                                  ToolTip="Visit kaydee.codes">KaydeeCodes</Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <c:MonthCalendar x:Name="SideCalendar" DockPanel.Dock="Top"
+                                             DateSelected="SideCalendar_DateSelected" DeleteRequested="SideCalendar_DeleteRequested"/>
+
+                            <Button DockPanel.Dock="Top" Style="{StaticResource SoftButton}" Content="Go to today"
+                                    HorizontalAlignment="Stretch" Margin="0,14,0,0" Click="Today_Click" ToolTip="Ctrl+T"/>
+
+                            <!-- My quick buttons at the bottom: light or dark, and my diary folder -->
+                            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                                <Button x:Name="ThemeButton" Style="{StaticResource IconButton}" Click="Theme_Click"
+                                        ToolTip="Switch between light and dark"/>
+                                <Button Style="{StaticResource IconButton}" Click="OpenFolder_Click"
+                                        ToolTip="Open your diary folder" Content="&#xE838;"/>
+                                <TextBlock x:Name="SaveStatus" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="12"
+                                           Foreground="{DynamicResource Brush.TextFaint}"/>
+                            </StackPanel>
+
+                            <!-- My mood key and days since counters, they scroll if there are lots -->
+                            <ScrollViewer Style="{StaticResource PageScrollViewer}" VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled" Margin="0,0,-10,8" Focusable="False">
+                                <StackPanel Margin="0,0,10,0">
+                                    <!-- My mood key so I always remember what each colour means -->
+                                    <StackPanel x:Name="MoodKeyPanel">
+                                        <TextBlock Text="Mood key" FontSize="11" FontWeight="SemiBold"
+                                                   Margin="4,22,0,8" Foreground="{DynamicResource Brush.TextFaint}"/>
+                                        <WrapPanel x:Name="MoodKey" Margin="2,0,0,0"/>
+                                    </StackPanel>
+
+                                    <c:CountersPanel x:Name="CountersView"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+
+                    <DockPanel Grid.Column="1">
+                        <!-- My day header with the date and arrows for flicking between days -->
+                        <Grid DockPanel.Dock="Top" Margin="24,20,24,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Style="{StaticResource IconButton}" Content="&#xE76B;" Click="PrevDay_Click" ToolTip="Previous day (Alt+Left)"/>
+                                <Button Style="{StaticResource IconButton}" Content="&#xE76C;" Click="NextDay_Click" ToolTip="Next day (Alt+Right)"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock x:Name="DayName" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Accent}"/>
+                                <TextBlock x:Name="DayTitle" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                <c:MoodFace x:Name="HeaderMood" Width="30" Height="30" Margin="0,0,12,0" Visibility="Collapsed"/>
+                                <Button x:Name="CheckInToggle" Style="{StaticResource IconButton}" Click="ToggleCheckIn_Click"
+                                        ToolTip="Show or hide the Today panel"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- My ribbon above the page, like OneNote: Home, Insert, Draw and View -->
+                        <Border DockPanel.Dock="Top" Margin="24,0,24,12" Padding="8,6,8,6" CornerRadius="12"
+                                Background="{DynamicResource Brush.Card}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                            <DockPanel>
+                                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE7A7;" ToolTip="Undo (Ctrl+Z)" Click="Undo_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE7A6;" ToolTip="Redo (Ctrl+Y)" Click="Redo_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE74D;" ToolTip="Delete what's selected (Delete key)" Click="DeleteSelection_Click"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <RadioButton x:Name="TabHome" GroupName="Ribbon" Style="{StaticResource RibbonTab}" Content="Home" Tag="Home"
+                                                     IsChecked="True" Checked="RibbonTab_Checked"/>
+                                        <RadioButton GroupName="Ribbon" Style="{StaticResource RibbonTab}" Content="Insert" Tag="Insert" Checked="RibbonTab_Checked"/>
+                                        <RadioButton x:Name="TabDraw" GroupName="Ribbon" Style="{StaticResource RibbonTab}" Content="Draw" Tag="Draw" Checked="RibbonTab_Checked"/>
+                                        <RadioButton GroupName="Ribbon" Style="{StaticResource RibbonTab}" Content="View" Tag="View" Checked="RibbonTab_Checked"/>
+                                    </StackPanel>
+                                </DockPanel>
+
+                                <Grid>
+                                    <!-- My Home tab for making my writing look how I want -->
+                                    <WrapPanel x:Name="HomeBar">
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8DD;" Tag="bold" ToolTip="Bold (Ctrl+B)" Click="Format_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8DB;" Tag="italic" ToolTip="Italic (Ctrl+I)" Click="Format_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8DC;" Tag="underline" ToolTip="Underline (Ctrl+U)" Click="Format_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8E8;" Tag="bigger" ToolTip="Bigger text (Ctrl+])" Click="Format_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8E7;" Tag="smaller" ToolTip="Smaller text (Ctrl+[)" Click="Format_Click"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <Button Style="{StaticResource PlainButton}" Tag="title" Click="Format_Click" ToolTip="Make this line a big title"
+                                                Padding="8,4" VerticalAlignment="Center">
+                                            <TextBlock Text="Title" FontSize="15" FontWeight="SemiBold"/>
+                                        </Button>
+                                        <Button Style="{StaticResource PlainButton}" Tag="heading" Click="Format_Click" ToolTip="Make this line a heading"
+                                                Padding="8,4" VerticalAlignment="Center">
+                                            <TextBlock Text="Heading" FontSize="13" FontWeight="SemiBold"/>
+                                        </Button>
+                                        <Button Style="{StaticResource PlainButton}" Tag="normal" Click="Format_Click" ToolTip="Back to normal writing"
+                                                Padding="8,4" VerticalAlignment="Center">
+                                            <TextBlock Text="Normal" FontSize="12.5"/>
+                                        </Button>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8FD;" Tag="bullets" ToolTip="Bullet points" Click="Format_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Tag="numbers" ToolTip="Numbered list" Click="Format_Click">
+                                            <TextBlock Text="1." FontFamily="{StaticResource Font.UI}" FontSize="13" FontWeight="SemiBold"/>
+                                        </Button>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <TextBlock Style="{StaticResource RibbonLabel}" Text="Text"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="{DynamicResource Brush.Text}" Tag="auto" ToolTip="Normal colour" Click="TextColour_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#7B4FB8" ToolTip="Purple" Click="TextColour_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#3B82F6" ToolTip="Blue" Click="TextColour_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#E5484D" ToolTip="Red" Click="TextColour_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#30A46C" ToolTip="Green" Click="TextColour_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#F76B15" ToolTip="Orange" Click="TextColour_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#EC5FA0" ToolTip="Pink" Click="TextColour_Click"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <TextBlock Style="{StaticResource RibbonLabel}" Text="Highlight"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#FFE066" ToolTip="Yellow" Click="TextHighlight_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#7CF0A0" ToolTip="Green" Click="TextHighlight_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#FF9EC7" ToolTip="Pink" Click="TextHighlight_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#7FD3FF" ToolTip="Blue" Click="TextHighlight_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE711;" Tag="none" ToolTip="No highlight" Click="TextHighlight_Click"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE894;" Content="Clear" ToolTip="Clear the formatting on what's selected"
+                                                Click="ClearFormat_Click"/>
+                                    </WrapPanel>
+
+                                    <!-- My Insert tab for adding new things to my page -->
+                                    <WrapPanel x:Name="InsertBar" Visibility="Collapsed">
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE8D2;" Content="Text box" Click="AddTextBox_Click"
+                                                ToolTip="Add a text box (or just click anywhere on the page)"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE9D5;" Content="Checklist" Click="AddChecklist_Click"
+                                                ToolTip="Add a checklist, press Enter for each new line"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE823;" Content="Time" Click="TimeStamp_Click"
+                                                ToolTip="Pop the time in where you're typing"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE720;" Content="Voice note" Click="AddVoice_Click"
+                                                ToolTip="Record a voice note, up to 5 minutes"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <TextBlock Style="{StaticResource RibbonLabel}" Text="Sticky note"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#FFF1A8" Tag="#FFF1A8" ToolTip="Yellow sticky note" Click="AddSticky_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#FFD3E2" Tag="#FFD3E2" ToolTip="Pink sticky note" Click="AddSticky_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#CFE6FF" Tag="#CFE6FF" ToolTip="Blue sticky note" Click="AddSticky_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#D4F5CF" Tag="#D4F5CF" ToolTip="Green sticky note" Click="AddSticky_Click"/>
+                                        <Button Style="{StaticResource SwatchButton}" Background="#E6DAFF" Tag="#E6DAFF" ToolTip="Purple sticky note" Click="AddSticky_Click"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE8B9;" Content="Picture" Click="InsertImage_Click"
+                                                ToolTip="Add a picture (or just paste or drop one on the page)"/>
+                                        <Button Style="{StaticResource IconButton}" Tag="left" ToolTip="Rotate the selected picture left" Click="ImageEdit_Click">
+                                            <TextBlock Text="&#xE7AD;" RenderTransformOrigin="0.5,0.5">
+                                                <TextBlock.RenderTransform>
+                                                    <ScaleTransform ScaleX="-1"/>
+                                                </TextBlock.RenderTransform>
+                                            </TextBlock>
+                                        </Button>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE7AD;" Tag="right" ToolTip="Rotate the selected picture right" Click="ImageEdit_Click"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE7A8;" Tag="crop" ToolTip="Crop the selected picture" Click="ImageEdit_Click"/>
+                                    </WrapPanel>
+
+                                    <!-- My Draw tab with pens, highlighters, shapes and the lasso -->
+                                    <WrapPanel x:Name="DrawBar" Visibility="Collapsed">
+                                        <RadioButton x:Name="ToolType" GroupName="Tools" Tag="Type" Style="{StaticResource ToolRadio}"
+                                                     Content="&#xE8D2;" ToolTip="Select and type: click to write, click a picture to move, resize or delete it (Esc)"
+                                                     IsChecked="True" Checked="Tool_Checked"/>
+                                        <RadioButton GroupName="Tools" Tag="Pen" Style="{StaticResource ToolRadio}"
+                                                     Content="&#xE76D;" ToolTip="Pen" Checked="Tool_Checked"/>
+                                        <RadioButton GroupName="Tools" Tag="Highlighter" Style="{StaticResource ToolRadio}"
+                                                     Content="&#xE7E6;" ToolTip="Highlighter" Checked="Tool_Checked"/>
+                                        <RadioButton GroupName="Tools" Tag="Eraser" Style="{StaticResource ToolRadio}"
+                                                     Content="&#xE75C;" ToolTip="Eraser (rubs out whole lines)" Checked="Tool_Checked"/>
+                                        <RadioButton GroupName="Tools" Tag="Lasso" Style="{StaticResource ToolRadio}"
+                                                     Content="&#xE8B3;" ToolTip="Lasso: circle drawings to move, resize or delete them" Checked="Tool_Checked"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <RadioButton GroupName="Tools" Tag="Shape:Line" Style="{StaticResource ToolRadio}" ToolTip="Line (hold Shift for straight)" Checked="Tool_Checked">
+                                            <Path Data="M3,13 L13,3" Width="16" Height="16" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                        </RadioButton>
+                                        <RadioButton GroupName="Tools" Tag="Shape:Arrow" Style="{StaticResource ToolRadio}" ToolTip="Arrow (hold Shift for straight)" Checked="Tool_Checked">
+                                            <Path Data="M3,13 L13,3 M7,3 L13,3 L13,9" Width="16" Height="16" StrokeThickness="1.6" StrokeStartLineCap="Round"
+                                                  StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                        </RadioButton>
+                                        <RadioButton GroupName="Tools" Tag="Shape:Rectangle" Style="{StaticResource ToolRadio}" ToolTip="Rectangle (hold Shift for a square)" Checked="Tool_Checked">
+                                            <Path Data="M2.5,4.5 L13.5,4.5 L13.5,11.5 L2.5,11.5 Z" Width="16" Height="16" StrokeThickness="1.6" StrokeLineJoin="Round"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                        </RadioButton>
+                                        <RadioButton GroupName="Tools" Tag="Shape:Circle" Style="{StaticResource ToolRadio}" ToolTip="Circle (hold Shift for perfectly round)" Checked="Tool_Checked">
+                                            <Ellipse Width="12" Height="12" StrokeThickness="1.6"
+                                                     Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                        </RadioButton>
+                                        <RadioButton GroupName="Tools" Tag="Shape:Heart" Style="{StaticResource ToolRadio}" ToolTip="Heart" Checked="Tool_Checked">
+                                            <Path Data="M8,13.5 C8,13.5 2,9.5 2,5.8 C2,3.8 3.5,2.5 5.2,2.5 C6.5,2.5 7.5,3.3 8,4.3 C8.5,3.3 9.5,2.5 10.8,2.5 C12.5,2.5 14,3.8 14,5.8 C14,9.5 8,13.5 8,13.5 Z"
+                                                  Width="16" Height="16" StrokeThickness="1.5" StrokeLineJoin="Round"
+                                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                        </RadioButton>
+
+                                        <StackPanel x:Name="PenColors" Orientation="Horizontal" Visibility="Collapsed">
+                                            <Border Style="{StaticResource RibbonDivider}"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#7B4FB8" ToolTip="Purple" IsChecked="True" Checked="PenColor_Checked"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#3B82F6" ToolTip="Blue" Checked="PenColor_Checked"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#E5484D" ToolTip="Red" Checked="PenColor_Checked"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#30A46C" ToolTip="Green" Checked="PenColor_Checked"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#F76B15" ToolTip="Orange" Checked="PenColor_Checked"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#EC5FA0" ToolTip="Pink" Checked="PenColor_Checked"/>
+                                            <RadioButton GroupName="PenColour" Style="{StaticResource SwatchRadio}" Background="#8B8D98" ToolTip="Grey" Checked="PenColor_Checked"/>
+                                            <Border Style="{StaticResource RibbonDivider}"/>
+                                            <RadioButton GroupName="PenSize" Style="{StaticResource ToolRadio}" Tag="2.6" ToolTip="Thin" IsChecked="True" Checked="PenSize_Checked">
+                                                <Ellipse Width="4" Height="4" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                            </RadioButton>
+                                            <RadioButton GroupName="PenSize" Style="{StaticResource ToolRadio}" Tag="5" ToolTip="Medium" Checked="PenSize_Checked">
+                                                <Ellipse Width="7" Height="7" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                            </RadioButton>
+                                            <RadioButton GroupName="PenSize" Style="{StaticResource ToolRadio}" Tag="9" ToolTip="Thick" Checked="PenSize_Checked">
+                                                <Ellipse Width="11" Height="11" Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=RadioButton}}"/>
+                                            </RadioButton>
+                                        </StackPanel>
+
+                                        <StackPanel x:Name="HighlightColors" Orientation="Horizontal" Visibility="Collapsed">
+                                            <Border Style="{StaticResource RibbonDivider}"/>
+                                            <RadioButton GroupName="HighlightColour" Style="{StaticResource SwatchRadio}" Background="#FFE066" ToolTip="Yellow" IsChecked="True" Checked="HighlightColor_Checked"/>
+                                            <RadioButton GroupName="HighlightColour" Style="{StaticResource SwatchRadio}" Background="#7CF0A0" ToolTip="Green" Checked="HighlightColor_Checked"/>
+                                            <RadioButton GroupName="HighlightColour" Style="{StaticResource SwatchRadio}" Background="#FF9EC7" ToolTip="Pink" Checked="HighlightColor_Checked"/>
+                                            <RadioButton GroupName="HighlightColour" Style="{StaticResource SwatchRadio}" Background="#7FD3FF" ToolTip="Blue" Checked="HighlightColor_Checked"/>
+                                        </StackPanel>
+                                    </WrapPanel>
+
+                                    <!-- My View tab for zoom and the paper behind my writing -->
+                                    <WrapPanel x:Name="ViewBar" Visibility="Collapsed">
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE71F;" ToolTip="Zoom out (Ctrl+minus, or Ctrl and the mouse wheel)" Click="ZoomOut_Click"/>
+                                        <TextBlock x:Name="ZoomText" Text="100%" Width="46" TextAlignment="Center" VerticalAlignment="Center" FontSize="12.5"
+                                                   Foreground="{DynamicResource Brush.TextMuted}"/>
+                                        <Button Style="{StaticResource IconButton}" Content="&#xE8A3;" ToolTip="Zoom in (Ctrl+plus, or Ctrl and the mouse wheel)" Click="ZoomIn_Click"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE9A6;" Content="Fit page" ToolTip="Fit everything on the page into view" Click="ZoomFit_Click"/>
+                                        <Button Style="{StaticResource RibbonButton}" Tag="&#xE71E;" Content="100%" ToolTip="Back to normal size (Ctrl+0)" Click="ZoomReset_Click"/>
+                                        <Border Style="{StaticResource RibbonDivider}"/>
+                                        <TextBlock Style="{StaticResource RibbonLabel}" Text="Paper"/>
+                                        <RadioButton x:Name="PaperPlain" GroupName="Paper" Style="{StaticResource Chip}" Content="Plain" Tag="Plain" Margin="2,0" Checked="Paper_Checked"/>
+                                        <RadioButton x:Name="PaperLined" GroupName="Paper" Style="{StaticResource Chip}" Content="Lined" Tag="Lined" Margin="2,0" Checked="Paper_Checked"/>
+                                        <RadioButton x:Name="PaperGrid" GroupName="Paper" Style="{StaticResource Chip}" Content="Grid" Tag="Grid" Margin="2,0" Checked="Paper_Checked"/>
+                                        <RadioButton x:Name="PaperDots" GroupName="Paper" Style="{StaticResource Chip}" Content="Dots" Tag="Dots" Margin="2,0" Checked="Paper_Checked"/>
+                                    </WrapPanel>
+                                </Grid>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- My page, the main place I write -->
+                        <Border Margin="24,0,24,24" CornerRadius="14" Padding="2" Background="{DynamicResource Brush.Page}"
+                                BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                            <c:DiaryPage x:Name="DayPage"/>
+                        </Border>
+                    </DockPanel>
+
+                    <Border x:Name="CheckInHost" Grid.Column="2" Background="{DynamicResource Brush.Panel}"
+                            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1,0,0,0">
+                        <c:CheckInPanel x:Name="CheckInView"/>
+                    </Border>
+                </Grid>
+
+                <!-- My other screens, only one shows at a time -->
+                <c:WeekView x:Name="WeekScreen" Visibility="Collapsed"/>
+                <c:MonthView x:Name="MonthScreen" Visibility="Collapsed"/>
+                <c:MemoriesView x:Name="MemoriesScreen" Visibility="Collapsed"/>
+                <c:InsightsView x:Name="InsightsScreen" Visibility="Collapsed"/>
+                <c:SearchView x:Name="SearchScreen" Visibility="Collapsed"/>
+                <c:PrintView x:Name="PrintScreen" Visibility="Collapsed"/>
+            </Grid>
+        </Grid>
+
+        <!-- My lock screen, only used if I switch the password on -->
+        <Grid x:Name="LockOverlay" Visibility="Collapsed" Background="{DynamicResource Brush.Window}">
+            <Border Width="380" Padding="34,36,34,30" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="{DynamicResource Brush.Card}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                <StackPanel>
+                    <Image Source="/Assets/Kaydence.png" Width="64" Height="64" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <TextBlock Text="Welcome back" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,16,0,2"
+                               Foreground="{DynamicResource Brush.Text}"/>
+                    <TextBlock Text="Your diary is locked" HorizontalAlignment="Center" Margin="0,0,0,20"
+                               Foreground="{DynamicResource Brush.TextMuted}"/>
+                    <PasswordBox x:Name="UnlockBox" KeyDown="UnlockBox_KeyDown"/>
+                    <TextBlock x:Name="UnlockError" Text="That password isn't right, try again" Foreground="#E54B5A" FontSize="12" TextWrapping="Wrap"
+                               Margin="2,8,0,0" Visibility="Collapsed"/>
+                    <Button Style="{StaticResource AccentButton}" Content="Unlock" Height="42" Margin="0,14,0,0" Click="Unlock_Click"/>
+                    <Button x:Name="RecoverButton" Style="{StaticResource LinkButton}" HorizontalAlignment="Center" Margin="0,16,0,0"
+                            Content="Forgot your password? Use your recovery file" Click="Recover_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

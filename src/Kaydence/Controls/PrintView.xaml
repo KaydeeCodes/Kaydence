@@ -1,0 +1,68 @@
+<UserControl x:Class="Kaydence.Controls.PrintView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="340"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- My print options down the left -->
+        <Border Background="{DynamicResource Brush.Sidebar}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+            <ScrollViewer Style="{StaticResource PageScrollViewer}" Focusable="False" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="22,22,22,22">
+                    <TextBlock Text="Print or save as PDF" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Which days" Margin="0,18,0,6"/>
+                    <WrapPanel x:Name="RangeChips"/>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="FromBox" Tag="From 01/09/2026" TextChanged="Dates_TextChanged"/>
+                        <TextBox x:Name="ToBox" Grid.Column="2" Tag="To 30/09/2026" TextChanged="Dates_TextChanged"/>
+                    </Grid>
+
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Made for" Margin="0,18,0,6"/>
+                    <WrapPanel x:Name="AudienceChips"/>
+
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Include" Margin="0,18,0,6"/>
+                    <CheckBox x:Name="IncWriting" Content="Your writing" Margin="0,4" IsChecked="True" Click="Option_Click"/>
+                    <CheckBox x:Name="IncPictures" Content="Pictures and drawings" Margin="0,4" IsChecked="True" Click="Option_Click"/>
+                    <CheckBox x:Name="IncMood" Content="Mood" Margin="0,4" IsChecked="True" Click="Option_Click"/>
+                    <CheckBox x:Name="IncChart" Content="Mood chart at the top" Margin="0,4" IsChecked="True" Click="Option_Click"/>
+                    <CheckBox x:Name="IncHealthCharts" Content="Charts of sleep, weight, blood pressure and pain" Margin="0,4" Click="Option_Click"/>
+                    <CheckBox x:Name="IncCheckIn" Content="Note, sleep, fitness, tasks, struggles and wins" Margin="0,4" IsChecked="True" Click="Option_Click"/>
+                    <CheckBox x:Name="IncHealth" Content="Medications, pain, blood pressure, weight and period" Margin="0,4" Click="Option_Click"/>
+                    <CheckBox x:Name="IncTransition" Content="HRT or treatment, and milestones" Margin="0,4" Click="Option_Click"/>
+
+                    <TextBlock Style="{StaticResource FieldLabel}" Text="Layout" Margin="0,18,0,6"/>
+                    <CheckBox x:Name="DayPerPage" Content="Start each day on a new page" Margin="0,4" Click="Option_Click"/>
+
+                    <TextBlock x:Name="Summary" FontSize="12" Margin="0,16,0,0" TextWrapping="Wrap" Foreground="{DynamicResource Brush.TextMuted}"/>
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Style="{StaticResource AccentButton}" Content="Print" Height="38" Click="Print_Click"/>
+                        <Button Grid.Column="2" Style="{StaticResource SoftButton}" Content="Save as PDF" Height="38" Click="Pdf_Click"/>
+                    </Grid>
+                    <TextBlock FontSize="11.5" Margin="0,10,0,0" TextWrapping="Wrap" Foreground="{DynamicResource Brush.TextFaint}"
+                               Text="Save as PDF uses Microsoft Print to PDF, so Windows asks where to save the file."/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- My live preview of the pages on white paper -->
+        <Border Grid.Column="1" Background="{DynamicResource Brush.Window}" Padding="28">
+            <Border Background="White" CornerRadius="4" MaxWidth="860" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                <FlowDocumentScrollViewer x:Name="Preview" IsToolBarVisible="False" VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled" Focusable="False"/>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

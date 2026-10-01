@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem privately
+    url: https://github.com/KaydeeCodes/Kaydence/security/advisories/new
+    about: Please don't post security problems in public issues.
+  - name: Kaydence guide
+    url: https://kaydence.kaydee.codes
+    about: Press F1 in Kaydence for the full guide. Many questions are answered there.

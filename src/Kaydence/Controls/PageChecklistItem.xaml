@@ -1,0 +1,36 @@
+<UserControl x:Class="Kaydence.Controls.PageChecklistItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- My faint outline that only shows while I'm hovering or ticking things off -->
+        <Border x:Name="Frame" Grid.Row="0" Grid.RowSpan="2" CornerRadius="6" BorderThickness="1"
+                BorderBrush="{DynamicResource Brush.Border}" Opacity="0" IsHitTestVisible="False"/>
+
+        <!-- My grab bar for dragging the checklist around -->
+        <Thumb x:Name="MoveThumb" Grid.Row="0" Style="{StaticResource GripThumb}" Cursor="SizeAll" Opacity="0">
+            <Thumb.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add a line" Click="AddLine_Click"/>
+                    <MenuItem Header="Untick everything" Click="Untick_Click"/>
+                    <MenuItem Header="Remove ticked lines" Click="RemoveDone_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Bring to front" Click="Front_Click"/>
+                    <MenuItem Header="Send to back" Click="Back_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Delete this checklist" Click="Delete_Click"/>
+                </ContextMenu>
+            </Thumb.ContextMenu>
+        </Thumb>
+
+        <StackPanel x:Name="Rows" Grid.Row="1" Margin="4,2,6,6"/>
+
+        <!-- My handle on the right edge for making the list wider or narrower -->
+        <Thumb x:Name="WidthThumb" Grid.Row="1" Width="8" HorizontalAlignment="Right" Margin="0,0,-4,0"
+               Style="{StaticResource EdgeThumb}" Cursor="SizeWE" Opacity="0"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,26 @@
+<UserControl x:Class="Kaydence.Controls.WeekView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer Style="{StaticResource PageScrollViewer}" Focusable="False"
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <DockPanel Margin="28,22,28,28">
+            <!-- My week header with arrows to flick between weeks -->
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Style="{StaticResource IconButton}" Content="&#xE76B;" ToolTip="Previous week" Click="Prev_Click"/>
+                <Button Grid.Column="1" Style="{StaticResource IconButton}" Content="&#xE76C;" ToolTip="Next week" Click="Next_Click"/>
+                <StackPanel Grid.Column="2" Margin="12,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="Heading" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+                    <TextBlock x:Name="Subtitle" FontSize="13" Foreground="{DynamicResource Brush.TextMuted}"/>
+                </StackPanel>
+                <Button Grid.Column="3" Style="{StaticResource SoftButton}" Content="This week" VerticalAlignment="Center" Click="ThisWeek_Click"/>
+            </Grid>
+            <UniformGrid x:Name="Days" Columns="7" Rows="1" VerticalAlignment="Top"/>
+        </DockPanel>
+    </ScrollViewer>
+</UserControl>

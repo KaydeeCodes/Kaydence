@@ -1,0 +1,26 @@
+<UserControl x:Class="Kaydence.Controls.DiaryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <ScrollViewer x:Name="Scroller" Style="{StaticResource PageScrollViewer}" Focusable="False"
+                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <!-- My page is a free canvas of text and pictures with a drawing layer on top -->
+            <Grid x:Name="Surface" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  AllowDrop="True" Background="Transparent">
+                <Canvas x:Name="ItemsLayer" Background="Transparent"/>
+                <InkCanvas x:Name="Ink" Background="Transparent" IsHitTestVisible="False"/>
+                <!-- My live outline while I drag out a shape, it becomes real ink when I let go -->
+                <Path x:Name="ShapePreview" IsHitTestVisible="False" HorizontalAlignment="Left" VerticalAlignment="Top"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- My gentle reminder of what I can do on an empty page -->
+        <StackPanel x:Name="Hint" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Just start typing" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.TextFaint}"/>
+            <TextBlock Text="Click anywhere to write, paste or drop pictures, or use the ribbon to draw and add notes" FontSize="13"
+                       Margin="0,6,0,0" HorizontalAlignment="Center" Foreground="{DynamicResource Brush.TextFaint}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

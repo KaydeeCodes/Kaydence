@@ -1,0 +1,14 @@
+<UserControl x:Class="Kaydence.Controls.InsightsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer x:Name="Scroller" Style="{StaticResource PageScrollViewer}" Focusable="False"
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <!-- My insights: how my mood, sleep and health have been going, in pictures -->
+        <StackPanel Margin="28,22,28,32" MaxWidth="1100" HorizontalAlignment="Stretch">
+            <TextBlock Text="Insights" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+            <TextBlock Text="How you've been doing, worked out from your check-ins" FontSize="13" Foreground="{DynamicResource Brush.TextMuted}"/>
+            <ContentControl x:Name="RangeHost" Margin="0,16,0,0" Focusable="False"/>
+            <StackPanel x:Name="Body"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

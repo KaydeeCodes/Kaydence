@@ -1,0 +1,313 @@
+<UserControl x:Class="Kaydence.Controls.CheckInPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Kaydence.Controls">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20,22,20,12">
+            <TextBlock Text="Check-in" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+            <TextBlock Text="Fill in only what matters today. Right click a section to move or hide it." FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"
+                       Foreground="{DynamicResource Brush.TextMuted}"/>
+        </StackPanel>
+
+        <ScrollViewer Style="{StaticResource PageScrollViewer}" Focusable="False"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="SectionsHost" Margin="16,0,16,20">
+
+                <!-- My feelings card always stays open because it's the one I fill in most -->
+                <Border x:Name="FeelingsSection" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource CardTitle}" Text="Feelings"/>
+                        <c:MoodPicker x:Name="Mood" Margin="-4,10,-4,10"/>
+                        <TextBox Text="{Binding MoodNote, UpdateSourceTrigger=PropertyChanged}" Tag="What's behind it? (optional)"
+                                 AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <Expander x:Name="NoteSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="NoteHeader" Title="Note"/>
+                    </Expander.Header>
+                    <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" Tag="A short summary of the day for your reports"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64"/>
+                </Expander>
+
+                <Expander x:Name="MedsSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="MedsHeader" Title="Medications taken"/>
+                    </Expander.Header>
+                    <StackPanel>
+                        <ItemsControl x:Name="MedList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,2">
+                                        <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Width="24" Height="24"
+                                                FontSize="9" Content="&#xE711;" ToolTip="Stop showing this one in your list"
+                                                Click="RemoveMed_Click"/>
+                                        <CheckBox IsChecked="{Binding Taken}" VerticalAlignment="Center">
+                                            <TextBlock TextWrapping="Wrap">
+                                                <Run Text="{Binding Name, Mode=OneWay}"/>
+                                                <Run Text="{Binding Dose, Mode=OneWay}" Foreground="{DynamicResource Brush.TextMuted}"/>
+                                            </TextBlock>
+                                        </CheckBox>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="NoMedsHint" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,4"
+                                   Foreground="{DynamicResource Brush.TextMuted}"
+                                   Text="Add your regular medications once and they'll show here as tick boxes every day."/>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="86"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="NewMedName" Tag="Medication" KeyDown="NewMed_KeyDown"/>
+                            <TextBox x:Name="NewMedDose" Grid.Column="1" Tag="Dose" Margin="6,0" KeyDown="NewMed_KeyDown"/>
+                            <Button Grid.Column="2" Style="{StaticResource SoftButton}" Content="Add" Click="AddMed_Click"/>
+                        </Grid>
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Anything else"/>
+                        <TextBox Text="{Binding MedsOther, UpdateSourceTrigger=PropertyChanged}" Tag="Painkillers, one-offs, missed doses"
+                                 AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="TransitionSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="TransitionHeader" Title="Transition"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Transition}">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="HRT or treatment today" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding Hrt, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="What you took, how and how much (tablets, gel, patch, injection...)"
+                                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="54"/>
+                        <CheckBox Margin="0,10,0,0" IsChecked="{Binding IsMilestone}" Content="Today is a milestone"/>
+                        <TextBox Margin="0,8,0,0" Text="{Binding Milestone, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="What happened? A first, a change, something to remember"
+                                 AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="SymptomsSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="SymptomsHeader" Title="Symptoms and pain"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Symptoms}">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Pain level (0 is none, 10 is the worst)" Margin="0,0,0,5"/>
+                        <WrapPanel x:Name="PainChips"/>
+                        <TextBox Margin="0,4,0,0" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="How you feel physically" AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <!-- My period and cycle tracker, only there if I switch it on -->
+                <Expander x:Name="CycleSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="CycleHeader" Title="Period and cycle"/>
+                    </Expander.Header>
+                    <StackPanel>
+                        <Border CornerRadius="8" Padding="10,8" Margin="0,0,0,10" Background="{DynamicResource Brush.AccentSoft}">
+                            <TextBlock x:Name="CycleStatus" TextWrapping="Wrap" FontSize="12.5" Foreground="{DynamicResource Brush.Text}"/>
+                        </Border>
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Flow today" Margin="0,0,0,5"/>
+                        <WrapPanel x:Name="FlowChips"/>
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="How you feel" Margin="0,6,0,5"/>
+                        <WrapPanel x:Name="CycleFeelingChips"/>
+                        <TextBox Margin="0,4,0,0" Text="{Binding Cycle.Notes, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="Anything else about your cycle" AcceptsReturn="True" TextWrapping="Wrap"/>
+                        <TextBlock Text="Guesses are based on your last few cycles. They're rough, not medical advice, and must never be used as contraception."
+                                   FontSize="11" TextWrapping="Wrap" Margin="2,8,0,0" Foreground="{DynamicResource Brush.TextFaint}"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="SleepSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="SleepHeader" Title="Sleep"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Sleep}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="80" Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="7.5"/>
+                            <TextBlock Style="{StaticResource UnitLabel}" Text="hours"/>
+                        </StackPanel>
+                        <TextBox Margin="0,8,0,0" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="Wake ups, dreams, naps" AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="FitnessSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="FitnessHeader" Title="Fitness"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Fitness}">
+                        <TextBox Text="{Binding Activity, UpdateSourceTrigger=PropertyChanged}" Tag="What you did"
+                                 AcceptsReturn="True" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBox Width="80" Text="{Binding Minutes, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="30"/>
+                            <TextBlock Style="{StaticResource UnitLabel}" Text="minutes"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="BpSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="BpHeader" Title="Blood pressure"/>
+                    </Expander.Header>
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding BloodPressure}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!-- My reading card: the time on top, then the three numbers underneath -->
+                                    <Border Margin="0,0,0,8" Padding="12,10,8,12" CornerRadius="10"
+                                            Background="{DynamicResource Brush.Panel}" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Width="24" Height="24" FontSize="9"
+                                                        Content="&#xE711;" ToolTip="Remove this reading" Click="RemoveBp_Click"/>
+                                                <TextBlock Text="Reading at" Style="{StaticResource UnitLabel}" Margin="0,0,8,0"/>
+                                                <TextBox Width="74" HorizontalAlignment="Left" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}" Tag="09:00"/>
+                                            </DockPanel>
+                                            <Grid Margin="0,10,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="10"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Systolic" FontSize="11" Foreground="{DynamicResource Brush.TextMuted}" Margin="2,0,0,4"/>
+                                                    <TextBox Text="{Binding Systolic, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="120"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Diastolic" FontSize="11" Foreground="{DynamicResource Brush.TextMuted}" Margin="2,0,0,4"/>
+                                                    <TextBox Text="{Binding Diastolic, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="80"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="4">
+                                                    <TextBlock Text="Pulse" FontSize="11" Foreground="{DynamicResource Brush.TextMuted}" Margin="2,0,0,4"/>
+                                                    <TextBox Text="{Binding Pulse, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="70"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Style="{StaticResource SoftButton}" Content="Add a reading" HorizontalAlignment="Left" Click="AddBp_Click"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="WeightSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="WeightHeader" Title="Weight"/>
+                    </Expander.Header>
+                    <StackPanel>
+                        <WrapPanel x:Name="WeightUnitChips" Margin="0,0,0,4"/>
+                        <StackPanel x:Name="WeightSingle" Orientation="Horizontal">
+                            <TextBox x:Name="WeightBox" Width="90" Tag="0.0" TextChanged="Weight_TextChanged"/>
+                            <TextBlock x:Name="WeightUnitLabel" Style="{StaticResource UnitLabel}" Text="kg"/>
+                        </StackPanel>
+                        <StackPanel x:Name="WeightStone" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBox x:Name="StoneBox" Width="64" Tag="0" TextChanged="Weight_TextChanged"/>
+                            <TextBlock Style="{StaticResource UnitLabel}" Text="st" Margin="8,0,14,0"/>
+                            <TextBox x:Name="PoundsBox" Width="64" Tag="0" TextChanged="Weight_TextChanged"/>
+                            <TextBlock Style="{StaticResource UnitLabel}" Text="lb"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <!-- My habit counters, all switched off until I turn them on in settings -->
+                <Expander x:Name="WaterSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="WaterHeader" Title="Water"/>
+                    </Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource SoftButton}" Content="-" Width="38" Tag="water:-1" Click="Counter_Click"/>
+                        <TextBlock x:Name="WaterCount" Text="0" FontSize="20" FontWeight="SemiBold" Width="56" TextAlignment="Center"
+                                   VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}"/>
+                        <Button Style="{StaticResource SoftButton}" Content="+" Width="38" Tag="water:1" Click="Counter_Click"/>
+                        <TextBlock Style="{StaticResource UnitLabel}" Text="glasses"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="CaffeineSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="CaffeineHeader" Title="Caffeine"/>
+                    </Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource SoftButton}" Content="-" Width="38" Tag="caffeine:-1" Click="Counter_Click"/>
+                        <TextBlock x:Name="CaffeineCount" Text="0" FontSize="20" FontWeight="SemiBold" Width="56" TextAlignment="Center"
+                                   VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}"/>
+                        <Button Style="{StaticResource SoftButton}" Content="+" Width="38" Tag="caffeine:1" Click="Counter_Click"/>
+                        <TextBlock Style="{StaticResource UnitLabel}" Text="drinks (coffee, tea, energy)"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="SmokingSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="SmokingHeader" Title="Smoking"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Habits}">
+                        <CheckBox IsChecked="{Binding Smoked}" Content="Smoked today"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" IsEnabled="{Binding Smoked}">
+                            <TextBox Width="80" Text="{Binding Cigarettes, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="0"/>
+                            <TextBlock Style="{StaticResource UnitLabel}" Text="how many"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="AlcoholSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="AlcoholHeader" Title="Alcohol"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Habits}">
+                        <CheckBox IsChecked="{Binding Drank}" Content="Drank alcohol today"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" IsEnabled="{Binding Drank}">
+                            <TextBox Width="80" Text="{Binding Alcohol, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}" Tag="0"/>
+                            <TextBlock Style="{StaticResource UnitLabel}" Text="units or glasses"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="TasksSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="TasksHeader" Title="Tasks"/>
+                    </Expander.Header>
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding Tasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel Margin="0,0,0,6">
+                                        <Button DockPanel.Dock="Right" Style="{StaticResource IconButton}" Width="24" Height="24"
+                                                FontSize="9" Content="&#xE711;" ToolTip="Remove this task" Click="RemoveTask_Click"/>
+                                        <CheckBox DockPanel.Dock="Left" IsChecked="{Binding Done}" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" Margin="2,0,4,0" TextWrapping="Wrap"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBox x:Name="NewTask" Tag="Add a task and press Enter" KeyDown="NewTask_KeyDown"/>
+                        <Button x:Name="CarryTasksButton" Style="{StaticResource LinkButton}" Margin="2,8,0,0"
+                                Visibility="Collapsed" Click="CarryTasks_Click"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="StrugglesSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="StrugglesHeader" Title="Struggles"/>
+                    </Expander.Header>
+                    <TextBox Text="{Binding Struggles, UpdateSourceTrigger=PropertyChanged}" Tag="What was hard today"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="54"/>
+                </Expander>
+
+                <Expander x:Name="WinsSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="WinsHeader" Title="Wins and good things"/>
+                    </Expander.Header>
+                    <TextBox Text="{Binding Wins, UpdateSourceTrigger=PropertyChanged}" Tag="Anything that went well, big or small"
+                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="54"/>
+                </Expander>
+
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

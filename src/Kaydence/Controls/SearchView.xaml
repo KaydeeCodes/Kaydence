@@ -1,0 +1,19 @@
+<UserControl x:Class="Kaydence.Controls.SearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel Margin="28,22,28,0">
+        <!-- My search box and mood filters sit at the top, results scroll underneath -->
+        <StackPanel DockPanel.Dock="Top" MaxWidth="1000" HorizontalAlignment="Stretch">
+            <TextBlock Text="Search" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}"/>
+            <TextBox x:Name="QueryBox" FontSize="16" Padding="12,10" Margin="0,12,0,10"
+                     Tag="Search everything you've written" TextChanged="Query_TextChanged" KeyDown="Query_KeyDown"/>
+            <WrapPanel x:Name="MoodFilters"/>
+            <CheckBox x:Name="MilestonesOnly" Content="Only milestone days" Margin="2,4,0,0" Click="Filter_Click"/>
+            <TextBlock x:Name="ResultCount" FontSize="12" Margin="2,12,0,4" Foreground="{DynamicResource Brush.TextMuted}"/>
+        </StackPanel>
+        <ScrollViewer Style="{StaticResource PageScrollViewer}" Focusable="False"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="Results" Margin="0,4,0,28" MaxWidth="1000" HorizontalAlignment="Stretch"/>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

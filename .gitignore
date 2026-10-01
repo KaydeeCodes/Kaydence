@@ -1,0 +1,29 @@
+# My own drafts, plans and notes stay on my PC only
+private/
+
+# My build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+installer/Output/
+
+# My Rider and Visual Studio personal files
+.idea/
+*.user
+*.suo
+*.DotSettings.user
+.vs/
+
+# My diary data never goes in the repo
+Diary/
+*.isf
+index.json
+medications.json
+counters.json
+keys.json
+*.kaydencekey
+
+# Word lock files
+~$*.docx

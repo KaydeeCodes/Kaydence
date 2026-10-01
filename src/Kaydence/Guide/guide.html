@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kaydence Guide</title>
+<!-- My guide lives inside the app and opens in the browser, so everything it needs is in this one file -->
+<style>
+  :root {
+    --bg: #F5F2FA; --side: #EEE9F7; --card: #FFFFFF; --border: #E3DBEF; --text: #2A2438; --muted: #6F6784;
+    --accent: #7B4FB8; --soft: #EFE7FB; --warn-bg: #FFF4E5; --warn: #9A5B00; --good-bg: #E8F7EE; --good: #1F7A47;
+    --code: #F3EFF9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16141C; --side: #1B1824; --card: #221E2B; --border: #342E41; --text: #ECE8F4; --muted: #A59DB9;
+      --accent: #A884EC; --soft: #332A47; --warn-bg: #3A2C14; --warn: #F2C27A; --good-bg: #173226; --good: #7FD8A4;
+      --code: #2B2636;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 20px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.65 "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; }
+  a { color: var(--accent); }
+  .wrap { display: grid; grid-template-columns: 290px 1fr; min-height: 100vh; }
+  nav { position: sticky; top: 0; height: 100vh; overflow: auto; background: var(--side); border-right: 1px solid var(--border); padding: 26px 18px 40px; }
+  nav .brand { display: flex; align-items: center; gap: 12px; margin: 0 0 22px 6px; }
+  nav .brand img { width: 40px; height: 40px; border-radius: 10px; }
+  nav .brand b { display: block; font-size: 18px; }
+  nav .brand span { font-size: 12px; color: var(--muted); }
+  nav ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  nav li a { display: block; padding: 6px 10px; border-radius: 8px; color: var(--text); text-decoration: none; font-size: 13.5px; }
+  nav li a:hover { background: var(--soft); color: var(--accent); }
+  nav .group { font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin: 16px 0 4px 10px; }
+  main { padding: 40px 56px 80px; max-width: 980px; }
+  header.hero { display: flex; gap: 20px; align-items: center; margin-bottom: 30px; }
+  header.hero img { width: 76px; height: 76px; border-radius: 18px; box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+  header.hero h1 { margin: 0; font-size: 36px; letter-spacing: -.5px; }
+  header.hero p { margin: 2px 0 0; color: var(--muted); font-size: 16px; }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 26px 30px 20px; margin-bottom: 22px; }
+  h2 { margin: 0 0 12px; font-size: 24px; color: var(--accent); letter-spacing: -.2px; }
+  h3 { margin: 22px 0 6px; font-size: 17px; }
+  p { margin: 0 0 12px; }
+  ul, ol.steps { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 5px; }
+  ol.steps li::marker { color: var(--accent); font-weight: 700; }
+  kbd { font: 12.5px Consolas, monospace; background: var(--code); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+  code { font: 13px Consolas, monospace; background: var(--code); border-radius: 5px; padding: 1px 6px; word-break: break-all; }
+  .box { border-radius: 12px; padding: 12px 16px; margin: 12px 0 16px; font-size: 14.5px; }
+  .tip { background: var(--soft); }
+  .warn { background: var(--warn-bg); color: var(--warn); }
+  .good { background: var(--good-bg); color: var(--good); }
+  .box b:first-child { display: block; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 16px; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--soft); color: var(--accent); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  .faces { display: flex; gap: 14px; flex-wrap: wrap; margin: 6px 0 14px; }
+  .faces span { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+  .faces i { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 30px; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } nav { position: static; height: auto; } main { padding: 24px; } }
+  @media print { nav { display: none; } .wrap { display: block; } section { break-inside: avoid; border: 0; padding: 0; } body { background: #fff; color: #000; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="brand"><img src="data:image/png;base64,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" alt=""><div><b>Kaydence Guide</b><span>Everything, step by step</span></div></div>
+    <div class="group">Getting going</div>
+    <ol>
+      <li><a href="#welcome">Welcome</a></li>
+      <li><a href="#start">Your first few minutes</a></li>
+      <li><a href="#layout">Finding your way around</a></li>
+    </ol>
+    <div class="group">Writing</div>
+    <ol>
+      <li><a href="#ribbon">The ribbon</a></li>
+      <li><a href="#writing">Writing on your page</a></li>
+      <li><a href="#notes">Sticky notes and checklists</a></li>
+      <li><a href="#voice">Voice notes</a></li>
+      <li><a href="#pictures">Pictures</a></li>
+      <li><a href="#drawing">Drawing and highlighting</a></li>
+      <li><a href="#undo">Undo and redo</a></li>
+      <li><a href="#zoom">Zooming the page</a></li>
+      <li><a href="#days">Moving between days</a></li>
+      <li><a href="#calendar">The calendar</a></li>
+      <li><a href="#checkin">The check-in panel</a></li>
+      <li><a href="#cycle">Period and cycle</a></li>
+      <li><a href="#counters">Days since counters</a></li>
+    </ol>
+    <div class="group">Looking back</div>
+    <ol>
+      <li><a href="#screens">Week, Month, Memories and Search</a></li>
+      <li><a href="#insights">Insights and year in pixels</a></li>
+      <li><a href="#printing">Printing and PDFs</a></li>
+      <li><a href="#export">Exporting your diary</a></li>
+    </ol>
+    <div class="group">Keeping it safe</div>
+    <ol>
+      <li><a href="#privacy">Your privacy</a></li>
+      <li><a href="#password">Password, lock and encryption</a></li>
+      <li><a href="#recovery">Recovery file</a></li>
+      <li><a href="#forgot">If you forget your password</a></li>
+      <li><a href="#backups">Backups</a></li>
+      <li><a href="#restore">Restoring from a backup</a></li>
+      <li><a href="#deleted">Getting a deleted day back</a></li>
+      <li><a href="#files">Where everything is kept</a></li>
+      <li><a href="#newpc">Moving to a new PC</a></li>
+    </ol>
+    <div class="group">Everything else</div>
+    <ol>
+      <li><a href="#settings">Every setting explained</a></li>
+      <li><a href="#windows">Starting with Windows and the clock icon</a></li>
+      <li><a href="#reminder">Daily reminder</a></li>
+      <li><a href="#hotkey">Open Kaydence from anywhere</a></li>
+      <li><a href="#comfort">Fonts and easier reading</a></li>
+      <li><a href="#updates">Updates, problems and ideas</a></li>
+      <li><a href="#medical">Health features are not medical advice</a></li>
+      <li><a href="#logs">Logs</a></li>
+      <li><a href="#install">Installing and uninstalling</a></li>
+      <li><a href="#shortcuts">Keyboard shortcuts</a></li>
+      <li><a href="#help">Troubleshooting</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <img src="data:image/png;base64,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" alt="">
+      <div>
+        <h1>Kaydence Guide</h1>
+        <p>A private diary, made by <a href="https://kaydee.codes">KaydeeCodes</a>. Everything you need to know, in one place.</p>
+      </div>
+    </header>
+
+    <section id="welcome">
+      <h2>Welcome</h2>
+      <p>Kaydence is a diary for your PC. It opens straight onto today, ready for you to write, and it keeps everything on your computer. Nothing is ever uploaded anywhere.</p>
+      <p>It works a bit like OneNote: you can click anywhere on the page and type, paste pictures and drag them wherever you like, and draw or highlight over the top. Alongside that there's a check-in panel for how you're feeling and anything else you want to keep track of, and a calendar that shows at a glance which days you wrote about and how they felt.</p>
+      <div class="box good"><b>You never need to press save.</b>Kaydence saves everything by itself a moment after you stop typing. You'll see "Saved" and the time at the bottom of the left sidebar.</div>
+      <p>The first time Kaydence opens, a short welcome tour helps you pick light or dark, a font, which check-in sections you want, whether you'd like the optional health, period and transition tools, and whether to use a password or a daily reminder. You can see it again from <b>Settings, Help and feedback, Welcome tour</b>.</p>
+      <p>You can open this guide any time from <b>Settings, Help and feedback</b>, or by pressing <kbd>F1</kbd> anywhere in Kaydence.</p>
+    </section>
+
+    <section id="start">
+      <h2>Your first few minutes</h2>
+      <ol class="steps">
+        <li><b>Just start typing.</b> When Kaydence opens, the cursor is already waiting on today's page.</li>
+        <li><b>Pick a face</b> in the Feelings card on the right to say how your day is going. Click it again if you change your mind.</li>
+        <li><b>Paste a picture</b> with <kbd>Ctrl</kbd>+<kbd>V</kbd>, or drag one in from File Explorer. Drag it wherever you like.</li>
+        <li><b>Open a section</b> in the check-in panel, like Sleep or Tasks, if you want to note something there. Everything is optional.</li>
+        <li><b>Look at the calendar</b> on the left. Today now has a coloured dot, so you can see you wrote something.</li>
+      </ol>
+      <div class="box tip"><b>Tip</b>Have a look through <a href="#settings">Settings</a> once. You can choose light or dark, your favourite colour, lined or dotted pages, and hide any check-in sections you don't need.</div>
+    </section>
+
+    <section id="layout">
+      <h2>Finding your way around</h2>
+      <table>
+        <tr><th>Part of the window</th><th>What it's for</th></tr>
+        <tr><td><b>Icon rail</b> (far left)</td><td>Switches between Day, Week, Month, Memories, Insights, Search and Print. Settings is at the bottom, and Lock appears there once you've set a password.</td></tr>
+        <tr><td><b>Sidebar</b></td><td>The Kaydence logo, the month calendar, Go to today, the mood key, your days since counters, the light or dark button, the button that opens your diary folder, and the save status.</td></tr>
+        <tr><td><b>Day header</b></td><td>The date you're looking at, arrows to go back and forward a day, today's mood face, and a button to show or hide the check-in panel.</td></tr>
+        <tr><td><b>Ribbon</b></td><td>Four tabs above the page: Home, Insert, Draw and View. Undo, redo and delete sit on the right. See <a href="#ribbon">The ribbon</a>.</td></tr>
+        <tr><td><b>Page</b></td><td>Your freeform page for the day. Write, paste and draw anywhere.</td></tr>
+        <tr><td><b>Check-in panel</b> (right)</td><td>Optional sections for feelings, medications, sleep, tasks and more.</td></tr>
+      </table>
+    </section>
+
+    <section id="ribbon">
+      <h2>The ribbon</h2>
+      <p>The ribbon above your page works like the one in OneNote or Word. Click a tab name to switch what it shows.</p>
+      <table>
+        <tr><th>Tab</th><th>What's on it</th></tr>
+        <tr><td><b>Home</b></td><td>Bold, italic, underline, bigger and smaller text, <b>Title</b>, <b>Heading</b> and <b>Normal</b> lines, bullet points, numbered lists, text colours, highlight colours and <b>Clear</b> for formatting.</td></tr>
+        <tr><td><b>Insert</b></td><td>A new text box, a checklist, the time, a voice note, sticky notes in five colours, pictures, and rotate left, rotate right and crop for the picture you've selected.</td></tr>
+        <tr><td><b>Draw</b></td><td>Select and type, pen, highlighter, eraser, lasso, and shapes: line, arrow, rectangle, circle and heart. Pen colours and thickness appear when a pen or shape is picked.</td></tr>
+        <tr><td><b>View</b></td><td>Zoom out, zoom in, <b>Fit page</b>, <b>100%</b>, and the paper style: plain, lined, grid or dots.</td></tr>
+      </table>
+      <p>On the right of the tabs are <b>Undo</b>, <b>Redo</b> and <b>Delete</b>, which work whichever tab is showing.</p>
+      <div class="box tip"><b>Switching tabs puts the pen down</b>Going to Home or Insert switches back to Select and type, so a click on the page always starts writing. Your pen and shape choices are kept on the Draw tab for next time.</div>
+    </section>
+
+    <section id="writing">
+      <h2>Writing on your page</h2>
+      <h3>Starting a text box</h3>
+      <p>Click anywhere on an empty part of the page and start typing. Each click on empty space starts a new text box right where you clicked. You can also use <b>Text box</b> on the Insert tab. If a pen or shape is picked on the Draw tab, press <kbd>Esc</kbd> first to go back to <b>Select and type</b>.</p>
+      <p>If you click away from a text box without typing anything in it, it quietly disappears, so you never end up with empty boxes lying around.</p>
+      <h3>Moving and resizing text</h3>
+      <ul>
+        <li>Hover over a text box and a small grab bar appears along its top. Drag the bar to move the box anywhere.</li>
+        <li>Drag the thin line on the right hand edge to make the box wider or narrower.</li>
+        <li>Right click the grab bar for <b>Bring to front</b>, <b>Send to back</b> and <b>Delete this text</b>.</li>
+      </ul>
+      <h3>Making your writing look how you want</h3>
+      <p>Select some words, or just click in a line, then use the <b>Home</b> tab:</p>
+      <ul>
+        <li><b>B</b>, <b>I</b> and <b>U</b> for bold, italic and underline, or <kbd>Ctrl</kbd>+<kbd>B</kbd>, <kbd>Ctrl</kbd>+<kbd>I</kbd> and <kbd>Ctrl</kbd>+<kbd>U</kbd>.</li>
+        <li>The two A buttons make text bigger or smaller a step at a time.</li>
+        <li><b>Title</b> and <b>Heading</b> make the whole line big and bold, no need to select it first. <b>Normal</b> puts it back.</li>
+        <li>Bullet points and numbered lists. Press <kbd>Enter</kbd> twice to finish a list.</li>
+        <li><b>Text</b> colours change the colour of the words. The first dot puts them back to the normal colour, which changes with light and dark mode.</li>
+        <li><b>Highlight</b> colours go behind the words, like a highlighter pen. The cross takes the highlight off.</li>
+        <li><b>Clear</b> takes all the formatting off the words you've selected.</li>
+      </ul>
+      <p>If you haven't clicked into any writing yet, the bottom of the sidebar says "Click into some writing first".</p>
+      <h3>Adding the time</h3>
+      <p><b>Time</b> on the Insert tab types the current time where your cursor is, handy for noting when something happened.</p>
+      <h3>Pasting text</h3>
+      <p>Paste into a text box as normal with <kbd>Ctrl</kbd>+<kbd>V</kbd>. If you paste while no text box is selected, Kaydence makes a new box for it.</p>
+      <h3>Spell check</h3>
+      <p>Spelling mistakes get a red squiggle. Right click the word for suggestions. Spell check uses UK English and can be switched off in Settings, Writing.</p>
+      <h3>Text size</h3>
+      <p>Settings, Look and feel, <b>Text size for new writing</b> sets the size of new text boxes. Text you've already written keeps its size.</p>
+    </section>
+
+    <section id="notes">
+      <h2>Sticky notes and checklists</h2>
+      <h3>Sticky notes</h3>
+      <p>On the Insert tab, click one of the coloured dots next to <b>Sticky note</b>. A square note appears on your page, ready to type in. They work just like text boxes: drag the bar at the top to move them, drag the right edge to make them wider, and use all the Home tab formatting.</p>
+      <ul>
+        <li>Right click the bar at the top and choose <b>Sticky note colour</b> to change its colour.</li>
+        <li>Sticky notes always use dark writing, so they're easy to read in dark mode too.</li>
+        <li>An empty sticky note stays on the page until you delete it, unlike an empty text box.</li>
+      </ul>
+      <h3>Checklists</h3>
+      <p>Click <b>Checklist</b> on the Insert tab and type your first item.</p>
+      <table>
+        <tr><th>To do this</th><th>Do this</th></tr>
+        <tr><td>Add the next line</td><td>Press <kbd>Enter</kbd></td></tr>
+        <tr><td>Tick or untick a line</td><td>Click its box, or press <kbd>Ctrl</kbd>+<kbd>Space</kbd></td></tr>
+        <tr><td>Join a line onto the one above, or remove an empty line</td><td>Press <kbd>Backspace</kbd> at the start of the line</td></tr>
+        <tr><td>Move between lines</td><td>The <kbd>Up</kbd> and <kbd>Down</kbd> arrows</td></tr>
+        <tr><td>Untick everything, or remove ticked lines</td><td>Right click the bar at the top of the checklist</td></tr>
+      </table>
+      <p>Ticked lines are crossed out and faded. Checklists show up in Search and in printouts, with <code>[x]</code> for ticked lines.</p>
+      <div class="box tip"><b>Checklist or Tasks?</b>The Tasks section in the check-in panel can carry unfinished tasks over to the next day. A checklist on the page stays on that day, like a list written in a notebook.</div>
+    </section>
+
+    <section id="voice">
+      <h2>Voice notes</h2>
+      <p>Sometimes it's easier to say it than type it. Click <b>Voice note</b> on the Insert tab and start talking.</p>
+      <ol class="steps">
+        <li>A small window opens with a red dot, a timer and bars that move with your voice. It records from your default microphone.</li>
+        <li>Click <b>Stop and save</b> (or press <kbd>Enter</kbd>) when you're done. <b>Cancel</b> throws the recording away.</li>
+        <li>The voice note appears on your page as a bubble, like in WhatsApp.</li>
+      </ol>
+      <p>A voice note can be up to <b>5 minutes</b> long. At 5:00 it stops and saves by itself.</p>
+      <h3>Listening back</h3>
+      <ul>
+        <li>Click the round play button, or select the bubble and press <kbd>Space</kbd>, to play and pause.</li>
+        <li>Click anywhere on the waveform to jump to that part.</li>
+        <li>Drag the bar above the bubble to move it. Right click for <b>Save a copy as a sound file</b>, handy for sending to someone, plus Bring to front, Send to back and Delete.</li>
+      </ul>
+      <p>Voice notes are saved in that day's folder as <code>voice-...wav</code> files, and they're encrypted with everything else when your password is on. Search and printouts show them as "(Voice note, 1:23)".</p>
+      <div class="box warn"><b>If Kaydence can't hear you</b>Windows has a privacy switch for microphones. If the recorder says it can't hear anything or can't use the microphone, click <b>Open Windows microphone settings</b> in the recorder and make sure <b>Microphone access</b> and <b>Let desktop apps access your microphone</b> are both on. Also check the microphone isn't muted and is set as the default in Windows sound settings.</div>
+    </section>
+
+    <section id="pictures">
+      <h2>Pictures</h2>
+      <h3>Adding a picture</h3>
+      <ul>
+        <li><b>Paste it</b> with <kbd>Ctrl</kbd>+<kbd>V</kbd>. This works with screenshots (<kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>), pictures copied from a website, and picture files copied in File Explorer. If you're typing when you paste, the picture lands just under what you're writing.</li>
+        <li><b>Drag it in</b> from File Explorer and drop it where you want it.</li>
+        <li><b>Use Picture</b> on the Insert tab to pick one or more files.</li>
+      </ul>
+      <p>Big pictures are shrunk to a sensible size when they arrive. You can always make them bigger again.</p>
+      <div class="box good"><b>Photos are cleaned when they arrive</b>Photos from phones and cameras often hide extra details inside the file, like the exact place the photo was taken, the date and the camera model. When you add a photo, Kaydence saves a clean copy without any of that, turned the right way up. Your original file is never changed.</div>
+      <h3>Selecting, moving and resizing</h3>
+      <p>With <b>Select and type</b> picked, click a picture to select it. A purple frame appears around it.</p>
+      <ul>
+        <li>Drag the picture to move it anywhere.</li>
+        <li>Drag the round handle on the bottom right corner to resize it. It always keeps its shape.</li>
+        <li>Right click it for <b>Bring to front</b>, <b>Send to back</b> and <b>Delete this picture</b>.</li>
+      </ul>
+      <h3>Deleting a picture</h3>
+      <p>Select it, then do any of these:</p>
+      <ul>
+        <li>Click the little red bin that appears on its top right corner.</li>
+        <li>Press <kbd>Delete</kbd> or <kbd>Backspace</kbd>.</li>
+        <li>Click the bin button at the top right of the ribbon.</li>
+      </ul>
+      <p>Changed your mind? Press <kbd>Ctrl</kbd>+<kbd>Z</kbd> and it comes straight back.</p>
+      <h3>Rotating and cropping</h3>
+      <p>Right click a picture, or select it and use the buttons on the Insert tab:</p>
+      <ul>
+        <li><b>Rotate left</b> and <b>Rotate right</b> turn it a quarter turn.</li>
+        <li><b>Crop...</b> opens a window with your picture. Drag a box over the part you want to keep. Drag inside the box to move it, or click <b>Keep it all</b> to start again. Click <b>Crop</b> when you're happy.</li>
+        <li><b>Reset size</b> puts the picture back to the size it was when you first added it.</li>
+      </ul>
+      <p>Rotating and cropping save a new copy of the picture, so <kbd>Ctrl</kbd>+<kbd>Z</kbd> can still bring the original back.</p>
+      <h3>Text and pictures together</h3>
+      <p>Pictures float on the page. They never push your writing around, so you can put text next to them, on top of them or underneath them. Use Bring to front and Send to back to choose what sits on top.</p>
+      <div class="box tip"><b>Where pictures are stored</b>Every picture is copied into that day's folder inside your diary, so it's safe even if you delete the original.</div>
+    </section>
+
+    <section id="drawing">
+      <h2>Drawing and highlighting</h2>
+      <p>All the drawing tools are on the <b>Draw</b> tab.</p>
+      <table>
+        <tr><th>Tool</th><th>What it does</th></tr>
+        <tr><td><b>Select and type</b></td><td>The normal tool. Click to write, click pictures to select them.</td></tr>
+        <tr><td><b>Pen</b></td><td>Draw with the mouse, a touchpad or a pen. Pick a colour from the dots that appear next to it, and thin, medium or thick.</td></tr>
+        <tr><td><b>Highlighter</b></td><td>A see-through marker for highlighting writing or pictures. Yellow, green, pink or blue.</td></tr>
+        <tr><td><b>Eraser</b></td><td>Click or drag over a line to rub the whole line out.</td></tr>
+        <tr><td><b>Lasso</b></td><td>Draw a loop around some of your drawings to select them. Then drag to move them, drag the corners to resize, or press <kbd>Delete</kbd> to remove them. The lasso only picks up drawings, not text or pictures.</td></tr>
+      </table>
+      <h3>Shapes</h3>
+      <p>Pick a line, arrow, rectangle, circle or heart, then press and drag on the page. You'll see the shape as you drag, and it's drawn when you let go. Shapes use the pen colour and thickness.</p>
+      <ul>
+        <li>Hold <kbd>Shift</kbd> while dragging for perfectly straight lines and arrows (in steps of 45 degrees), squares, perfect circles and even hearts.</li>
+        <li>Shapes are drawings like anything from the pen, so the eraser rubs them out, the lasso moves and resizes them, and undo works on them.</li>
+      </ul>
+      <p>Drawings sit on a layer over everything else, so you can circle part of a photo or underline some writing. Press <kbd>Esc</kbd> to go back to Select and type.</p>
+    </section>
+
+    <section id="undo">
+      <h2>Undo and redo</h2>
+      <p>Press <kbd>Ctrl</kbd>+<kbd>Z</kbd> to undo and <kbd>Ctrl</kbd>+<kbd>Y</kbd> (or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>) to redo, or use the curved arrow buttons at the top right of the ribbon.</p>
+      <p>Undo works for everything on the page: typing, adding or deleting pictures, moving things, resizing and drawing. Each step is whatever you did before you paused, so a burst of typing undoes in one go.</p>
+      <ul>
+        <li>Undo history belongs to the day you're on. When you move to another day, it starts fresh.</li>
+        <li>Undo in the check-in panel works inside each box with the normal <kbd>Ctrl</kbd>+<kbd>Z</kbd>.</li>
+      </ul>
+    </section>
+
+    <section id="zoom">
+      <h2>Zooming the page</h2>
+      <ul>
+        <li>Hold <kbd>Ctrl</kbd> and roll the mouse wheel over the page. It zooms towards wherever your mouse is.</li>
+        <li><kbd>Ctrl</kbd>+<kbd>plus</kbd> and <kbd>Ctrl</kbd>+<kbd>minus</kbd> zoom in and out, and <kbd>Ctrl</kbd>+<kbd>0</kbd> goes back to 100%.</li>
+        <li>On the View tab, <b>Fit page</b> shrinks the page until everything on it fits in the window. Great for seeing a busy day all at once.</li>
+      </ul>
+      <p>Zoom goes from 25% to 300%. It only changes how the page looks, never the size of anything saved, and it stays the same as you move between days.</p>
+    </section>
+
+    <section id="days">
+      <h2>Moving between days</h2>
+      <ul>
+        <li>Click any day on the calendar.</li>
+        <li>Use the arrows next to the date, or <kbd>Alt</kbd>+<kbd>Left</kbd> and <kbd>Alt</kbd>+<kbd>Right</kbd>.</li>
+        <li>Click <b>Go to today</b>, or press <kbd>Ctrl</kbd>+<kbd>T</kbd> from anywhere.</li>
+        <li>Click a day on the Week, Month, Memories or Search screens to open it.</li>
+      </ul>
+      <p>If you leave Kaydence open overnight on today's page, it moves to the new day by itself the next time you come back to it.</p>
+    </section>
+
+    <section id="calendar">
+      <h2>The calendar</h2>
+      <p>The small calendar on the left works like Outlook's.</p>
+      <ul>
+        <li>A <b>dot</b> under a day means you wrote or checked in that day. Its colour matches the mood you picked. A grey dot means there's an entry but no mood.</li>
+        <li>A <b>star</b> means you marked that day as a milestone.</li>
+        <li><b>Today</b> has a coloured ring, and the day you're looking at is filled in.</li>
+        <li>Scroll the mouse wheel over the calendar to flick through months.</li>
+      </ul>
+      <div class="faces">
+        <span><i style="background:#3FB97C"></i>Great</span>
+        <span><i style="background:#9CCB4A"></i>Good</span>
+        <span><i style="background:#F2C14E"></i>Okay</span>
+        <span><i style="background:#F28C4A"></i>Bad</span>
+        <span><i style="background:#E54B5A"></i>Awful</span>
+      </div>
+      <h3>Deleting a day</h3>
+      <ol class="steps">
+        <li>Right click the day on the calendar.</li>
+        <li>Choose <b>Delete this day's entry</b>.</li>
+        <li>Click <b>Yes</b> to confirm.</li>
+      </ol>
+      <p>The day isn't wiped. Its whole folder is moved into a <b>deleted</b> folder inside your diary, so you can bring it back if you need to. See <a href="#deleted">Getting a deleted day back</a>.</p>
+    </section>
+
+    <section id="checkin">
+      <h2>The check-in panel</h2>
+      <p>The panel on the right is for quick, structured notes about your day. Every part is optional: fill in as much or as little as you like. Sections stay folded away until you click them. A section with something in it shows a small dot and a summary, like "7.5 h" or "118/76", so you can see what's filled in without opening it.</p>
+      <p>Hide the whole panel with the button on the right of the day header.</p>
+      <h3>Choosing and arranging sections</h3>
+      <ul>
+        <li><b>Right click</b> any section for <b>Move to the top</b>, <b>Move up</b>, <b>Move down</b>, <b>Move to the bottom</b> and <b>Hide this section</b>.</li>
+        <li>In <b>Settings, Today panel</b>, every section has a switch to show or hide it, and arrows to move it up or down. Kaydence remembers your order.</li>
+        <li>Hiding a section never deletes anything you wrote in it. Switch it back on and it's all still there.</li>
+      </ul>
+      <table>
+        <tr><th>Section</th><th>How to use it</th></tr>
+        <tr><td><b>Feelings</b></td><td>Click one of five faces, from Great to Awful. Click it again to clear it. Add a few words about what's behind it if you like. Your choice colours the day on every calendar.</td></tr>
+        <tr><td><b>Note</b></td><td>A short summary of the day. Handy for printouts.</td></tr>
+        <tr><td><b>Medications taken</b></td><td>Type a medication and dose, then click <b>Add</b>. It joins your saved list and shows as a tick box every day from then on, so you only tick what you took. The time is recorded when you tick it on today's page. The small cross hides a medication from your list; days where you already ticked it keep their record. Use <b>Anything else</b> for one-offs or missed doses.</td></tr>
+        <tr><td><b>Transition</b></td><td>Off until you switch it on in the welcome tour or Settings, Today panel. Type your HRT or treatment for the day, whatever form it takes: tablets, gel, patches, injections or anything else. Tick <b>Today is a milestone</b> to put a star on the calendar and add the day to your Memories.</td></tr>
+        <tr><td><b>Period and cycle</b></td><td>Off until you switch it on. See <a href="#cycle">Period and cycle</a>.</td></tr>
+        <tr><td><b>Symptoms and pain</b></td><td>Pick a pain level from 0 (none) to 10 (the worst) and describe how you feel physically.</td></tr>
+        <tr><td><b>Sleep</b></td><td>Hours slept, plus any notes like wake ups or naps.</td></tr>
+        <tr><td><b>Fitness</b></td><td>What you did and for how many minutes.</td></tr>
+        <tr><td><b>Blood pressure</b></td><td>Click <b>Add a reading</b>. The time fills in by itself (you can change it), then type the systolic (top), diastolic (bottom) and pulse numbers underneath. Add as many readings a day as you need.</td></tr>
+        <tr><td><b>Weight</b></td><td>Choose kg, stone and pounds, or pounds, then type your weight. It's always stored in kg underneath, so you can switch units at any time without losing anything.</td></tr>
+        <tr><td><b>Water</b> and <b>Caffeine</b></td><td>Off until you switch them on. Tap plus and minus to count glasses of water and cups of tea, coffee or energy drinks.</td></tr>
+        <tr><td><b>Smoking</b></td><td>Off until you switch it on. Tick if you smoked today and how many.</td></tr>
+        <tr><td><b>Alcohol</b></td><td>Off until you switch it on. Tick if you drank today and how many units or glasses.</td></tr>
+        <tr><td><b>Tasks</b></td><td>Type a task and press <kbd>Enter</kbd>. Tick it when it's done. If the last day you had tasks left some unfinished, a link offers to bring them over.</td></tr>
+        <tr><td><b>Struggles</b> and <b>Wins</b></td><td>What was hard, and what went well, big or small.</td></tr>
+      </table>
+    </section>
+
+    <section id="cycle">
+      <h2>Period and cycle</h2>
+      <p>An optional period tracker. It's off unless you switch it on, either in the welcome tour or in <b>Settings, Today panel, Period and cycle</b>.</p>
+      <h3>Logging</h3>
+      <ul>
+        <li>Open <b>Period and cycle</b> in the check-in panel and pick today's flow: <b>Spotting</b>, <b>Light</b>, <b>Medium</b> or <b>Heavy</b>. Click it again to clear it.</li>
+        <li>Tick anything you feel, like cramps, bloating, headache or tiredness. Pick as many as you like.</li>
+        <li>Add a note if you want to remember something else.</li>
+      </ul>
+      <h3>What Kaydence works out</h3>
+      <ul>
+        <li>The box at the top says which day of your cycle it is and roughly when your next period is due, or that it's late.</li>
+        <li>Days you logged a period get a small <b>pink dot</b> in the corner of the calendar. A <b>pink ring</b> marks days your next period might start.</li>
+        <li>The Week and Month screens show a pink <b>Period</b> label on logged days, and an outlined <b>Period may start</b> label on guessed days.</li>
+        <li>Insights shows your average cycle and period length, your next expected period, possible fertile days, and a bar for each recent cycle.</li>
+        <li>Printouts for your doctor include your flow and how you felt on the days you logged them.</li>
+      </ul>
+      <p>Spotting is recorded but doesn't count as the start of a period. Guesses use your last six cycles, and a typical 28 day cycle until you've logged a few.</p>
+      <div class="box warn"><b>Only a rough guess</b>Predictions are estimates from your own past cycles. They aren't medical advice and must never be used as contraception.</div>
+    </section>
+
+    <section id="counters">
+      <h2>Days since counters</h2>
+      <p>Under the calendar you can keep counters like "142 days since starting HRT" or "30 days alcohol free".</p>
+      <ol class="steps">
+        <li>Click the small <b>+</b> next to <b>Days since</b> in the sidebar.</li>
+        <li>Type a name, or click one of the ideas like <b>Started HRT</b> or <b>Smoke free</b>.</li>
+        <li>Type the date it started, like <code>14/3/2025</code>, or click <b>Today</b>. Kaydence shows the full date underneath so you can check it's right.</li>
+        <li>Click <b>Save</b>.</li>
+      </ol>
+      <ul>
+        <li>Hover over a counter to see the date and how long that is in years and months.</li>
+        <li>Click a counter to change it, or right click it for <b>Start again from today</b> and <b>Delete this counter</b>.</li>
+        <li>On round numbers like 7, 30, 50, 100 and 365 days, and on anniversaries, the counter says <b>Milestone today</b>.</li>
+        <li>A date in the future counts down instead, like "12 days to go" for an appointment or surgery.</li>
+      </ul>
+      <p>Hide the counters in Settings, Look and feel, <b>Show days since counters</b>.</p>
+    </section>
+
+    <section id="screens">
+      <h2>Week, Month, Memories and Search</h2>
+      <h3>Week</h3>
+      <p>Seven days side by side, each with its mood face, the start of what you wrote, the first picture, period labels if you track your cycle, and a few facts like sleep and tasks. Use the arrows to move between weeks, and click any day to open it.</p>
+      <h3>Month</h3>
+      <p>The whole month in a big grid. Each day is tinted in its mood colour, with a snippet and a picture if it has one. On the right you'll find how your month felt, how many days you wrote, your longest writing streak, how many pictures and words, and a highlight of the month.</p>
+      <h3>Memories</h3>
+      <p><b>On this day</b> shows what you wrote on today's date in past years. <b>Your milestones</b> lists every day you marked as a milestone, newest first, grouped by year.</p>
+      <h3>Search</h3>
+      <p>Press <kbd>Ctrl</kbd>+<kbd>F</kbd> or click Search, then type a word. Kaydence searches everything: your page, and every check-in box. Narrow it down by clicking mood faces, or tick <b>Only milestone days</b>. Results show newest first with your search word highlighted. Click one to open that day.</p>
+    </section>
+
+    <section id="insights">
+      <h2>Insights and year in pixels</h2>
+      <p>Click <b>Insights</b> on the icon rail to see your check-ins turned into charts. Pick how far back to look at the top: the last 30 days, 3 months, 12 months, this year, or everything.</p>
+      <table>
+        <tr><th>Part</th><th>What it shows</th></tr>
+        <tr><td><b>The numbers at the top</b></td><td>How many days you wrote, your current writing streak and your best one, your average mood, and your best day of the week.</td></tr>
+        <tr><td><b>Mood over time</b></td><td>A dot for every day you picked a mood, and a thicker line showing your average over the week before. Hover over it to see the exact day.</td></tr>
+        <tr><td><b>By day of the week</b> and <b>By season</b></td><td>Your average mood for each weekday, and for winter, spring, summer and autumn. Hover over a bar to see how many days it's based on.</td></tr>
+        <tr><td><b>By month</b></td><td>Your average mood month by month.</td></tr>
+        <tr><td><b>Your year in pixels</b></td><td>One square for every day of the year, coloured by your mood. Pale purple squares are days you wrote without picking a mood. Click a square to open that day, and use the arrows to see other years.</td></tr>
+        <tr><td><b>Your health</b></td><td>Charts for sleep, weight, blood pressure and pulse, and pain, as soon as you've filled them in. Weight uses the unit you picked in Settings.</td></tr>
+      </table>
+      <div class="box tip"><b>Seasons</b>Kaydence uses UK seasons: winter is December to February, spring is March to May, summer is June to August and autumn is September to November.</div>
+    </section>
+
+    <section id="printing">
+      <h2>Printing and PDFs</h2>
+      <p>Click <b>Print</b> on the icon rail, or press <kbd>Ctrl</kbd>+<kbd>P</kbd>. The preview on the right updates as you change things.</p>
+      <ol class="steps">
+        <li><b>Choose the days.</b> Pick Last 7 days, This month, Last month, Last 3 months or Everything, or type your own dates in the two boxes like <code>01/09/2026</code>.</li>
+        <li><b>Choose who it's for.</b> <b>Just for you</b> includes your writing, pictures and drawings. <b>Your doctor</b> leaves out your personal writing and pictures, and includes your check-in, medications, pain, blood pressure, weight, period and transition details instead.</li>
+        <li><b>Fine tune what's included</b> with the tick boxes: writing, pictures and drawings, mood, mood chart, health charts, check-in, health, and HRT or treatment. Health and transition options only appear if those sections are switched on.</li>
+        <li><b>Choose the layout.</b> Tick <b>Start each day on a new page</b> if you'd like every day on its own sheet.</li>
+        <li>Click <b>Print</b>, or <b>Save as PDF</b>.</li>
+      </ol>
+      <h3>Saving a PDF</h3>
+      <p><b>Save as PDF</b> opens the print window with <b>Microsoft Print to PDF</b> already chosen. Click Print, then Windows asks where to save the file and what to call it.</p>
+      <div class="box tip"><b>For appointments</b>Choose Your doctor and Last month, save a PDF, and either print it or email it. Every day has its own coloured band with the date, so nothing runs together.</div>
+      <p><b>Charts of sleep, weight, blood pressure and pain</b> puts a chart for each one at the top, straight after the mood chart. Your doctor ticks it for you.</p>
+      <p>Each day's details, like Medication, Sleep and Pain, are printed with bold headings so they're easy to scan. Drawings from your page are printed as a picture under that day's photos. Only days with an entry are printed.</p>
+    </section>
+
+    <section id="export">
+      <h2>Exporting your diary</h2>
+      <p>Your words are yours to keep. You can copy your whole diary out of Kaydence at any time, into files that open on any computer without Kaydence.</p>
+      <h3>Export to a folder</h3>
+      <ol class="steps">
+        <li>Open <b>Settings, Your diary folder</b> and click <b>Export to a folder</b>.</li>
+        <li>Choose where the export should go, like your Documents folder or a USB stick.</li>
+        <li>Kaydence makes a new folder called <code>Kaydence export</code> with today's date, and opens it when it's done.</li>
+      </ol>
+      <p>Inside you'll find:</p>
+      <ul>
+        <li><code>Kaydence diary.html</code>, one web page with every day, its mood, writing, pictures, voice notes, drawings and check-in. Open it in any web browser.</li>
+        <li>A folder for every day, sorted by year, with a text file of the writing and check-in, the pictures, the voice notes as normal sound files, and a picture of any drawings.</li>
+        <li><code>Read me.txt</code>, explaining what everything is.</li>
+      </ul>
+      <h3>Save everything as a PDF</h3>
+      <p>Click <b>Save as PDF</b> in the same place. Kaydence opens Print with <b>Everything</b> chosen, so you just press <b>Save as PDF</b>. See <a href="#printing">Printing and PDFs</a>.</p>
+      <div class="box warn"><b>Exports are not encrypted</b>Even if your diary has a password, an export is ordinary files that anyone with access to the folder can read. Kaydence reminds you of this before it starts. Keep exports somewhere private, and delete them when you no longer need them.</div>
+    </section>
+
+    <section id="privacy">
+      <h2>Your privacy</h2>
+      <p>Kaydence was made to be private from the ground up.</p>
+      <ul>
+        <li><b>Everything stays on your PC.</b> Your diary, pictures, voice notes, settings and backups are stored in folders on your computer. There's no account, no sign in and no cloud.</li>
+        <li><b>No tracking.</b> Kaydence has no analytics, no adverts and no usage statistics. It never counts what you do or sends it anywhere.</li>
+        <li><b>The only thing that goes online</b> is the optional update check. Once a day Kaydence asks GitHub for the latest version number. Nothing about you or your diary is sent. You can switch it off in <b>Settings, Help and feedback</b>.</li>
+        <li><b>Links you click</b>, like Report a problem or the website, open in your own web browser. Kaydence doesn't add anything from your diary to them.</li>
+        <li><b>Logs and bug reports</b> never contain anything you wrote. See <a href="#logs">Logs</a>.</li>
+        <li><b>Photos are cleaned</b> of hidden location and camera details when you add them.</li>
+        <li><b>Encryption is optional</b> and strong. See <a href="#password">Password, lock and encryption</a>.</li>
+      </ul>
+      <p>The same privacy statement is on the website at <a href="https://kaydence.kaydee.codes/privacy">kaydence.kaydee.codes/privacy</a>.</p>
+    </section>
+
+    <section id="password">
+      <h2>Password, lock and encryption</h2>
+      <p>A password is optional and switched off to begin with. When it's on, Kaydence asks for it before showing your diary, and <b>every file in your diary is encrypted</b> with it: your pages, pictures, voice notes, check-ins, counters and medications.</p>
+      <h3>Setting a password</h3>
+      <ol class="steps">
+        <li>Open <b>Settings</b> and go to <b>Privacy and lock</b>.</li>
+        <li>Switch on <b>Lock with a password</b>.</li>
+        <li>Type your password twice and click <b>Save</b>. It needs at least 4 characters.</li>
+        <li>Kaydence encrypts your whole diary. A small window shows the progress, it only takes a moment.</li>
+        <li>Kaydence asks you to save a <a href="#recovery">recovery file</a>. Please do. It's the only way back in if you ever forget your password.</li>
+        <li>If you had backups from before, Kaydence offers to make a new encrypted backup and delete the old ones, because the old ones could still be read.</li>
+      </ol>
+      <h3>When it asks for your password</h3>
+      <table>
+        <tr><th>Setting</th><th>What happens</th></tr>
+        <tr><td><b>Every time Kaydence opens</b></td><td>You're asked every time you start Kaydence.</td></tr>
+        <tr><td><b>Only if you haven't used it for a while</b></td><td>You're only asked if you haven't used Kaydence for the number of days you choose in <b>A while means this many days</b>. This box only appears when this option is picked. So that Kaydence can open your encrypted diary without asking, Windows keeps a protected copy of the key that only your Windows account on this PC can use.</td></tr>
+        <tr><td><b>Lock when you step away</b></td><td>Locks after a number of minutes without you touching Kaydence, even if it's still open.</td></tr>
+        <tr><td><b>Lock when it's hidden by the clock</b></td><td>Locks as soon as Kaydence tucks itself away into the notification area.</td></tr>
+      </table>
+      <p>You can lock straight away at any time with the <b>Lock</b> button on the icon rail, <kbd>Ctrl</kbd>+<kbd>L</kbd>, or <b>Lock now</b> on the clock icon's right click menu.</p>
+      <h3>Changing or removing your password</h3>
+      <p>Click <b>Change</b> next to Change your password, type your current password, then choose a new one. Your recovery file keeps working, and your diary doesn't need encrypting again. To remove the password, switch off Lock with a password and type your current password to confirm. Kaydence then decrypts your diary back into normal files.</p>
+      <div class="box good"><b>What encryption protects</b>Your diary files are locked with AES-256 encryption. Someone who copies your diary folder, takes your hard drive or opens the files in File Explorer sees only scrambled data. Only your password or your recovery file can unlock them.</div>
+      <div class="box warn"><b>Please keep a recovery file</b>Because your diary is really encrypted, there's no back door. If you forget your password and don't have a recovery file, nobody can get your diary back, not even the person who made Kaydence.</div>
+      <p>When your diary is encrypted and set to ask every time, Kaydence asks for your password in a small window before it opens. If it starts with Windows and is set to start hidden, it waits quietly as an icon by the clock instead, and only asks for your password when you click the icon or press your shortcut. While Kaydence is running, locking it with <kbd>Ctrl</kbd>+<kbd>L</kbd> hides everything until you type your password again.</p>
+    </section>
+
+    <section id="recovery">
+      <h2>Recovery file</h2>
+      <p>A recovery file is the spare key for your encrypted diary. If you forget your password, it's the only way to open your diary and choose a new password.</p>
+      <h3>Saving one</h3>
+      <p>Kaydence offers to save one as soon as you set a password. You can also make one any time in <b>Settings, Privacy and lock, Recovery file</b>, then <b>Make a new one</b>. Pick where to save it and you're done. The file ends in <code>.kaydencekey</code>.</p>
+      <h3>Keeping the key in a password manager</h3>
+      <p>Straight after saving a recovery file, Kaydence offers to copy the recovery key so you can paste it into a password manager. If you say yes, Kaydence clears it from the clipboard after one minute, or when Kaydence closes, so it isn't left lying around.</p>
+      <h3>Where to keep it</h3>
+      <ul>
+        <li>A USB stick you keep somewhere safe is ideal.</li>
+        <li>A private cloud folder or a password manager also works.</li>
+        <li>Don't keep your only copy on the same PC. If the PC breaks, you want the recovery file somewhere else.</li>
+      </ul>
+      <div class="box warn"><b>Treat it like a key</b>Anyone who has your recovery file and a copy of your diary or a backup can open it. Keep it private, and never keep it in the same place as your backups.</div>
+      <h3>Making a new one</h3>
+      <p>Making a new recovery file stops the old one working. Do this if you think someone else might have your old one. The settings page shows the date your current recovery file was made. Switching encryption on for the first time also needs a new recovery file, because older ones can't open an encrypted diary.</p>
+    </section>
+
+    <section id="forgot">
+      <h2>If you forget your password</h2>
+      <h3>With your recovery file</h3>
+      <ol class="steps">
+        <li>On the lock screen, click <b>Forgot your password? Use your recovery file</b>.</li>
+        <li>Click <b>Choose the recovery file</b> and pick your <code>.kaydencekey</code> file. Or, if you kept the key in a password manager, paste it into the box and click <b>Use this key</b>.</li>
+        <li>Choose a new password and type it twice.</li>
+        <li>Kaydence unlocks. Your recovery file still works for next time.</li>
+      </ol>
+      <p>If Kaydence says the file doesn't match, it's probably an older recovery file from before you made a new one. Try any newer copy you have.</p>
+      <p>On the lock screen, or in the small window that asks for your password when Kaydence starts, it works the same way.</p>
+      <h3>Without a recovery file</h3>
+      <p>If your diary is encrypted, a forgotten password without a recovery file can't be worked around. That's what keeps your diary safe from everyone else too. Try any passwords you might have used, and check any older copies of your recovery file on USB sticks or in a password manager.</p>
+      <p>If you set a password but chose not to encrypt when Kaydence asked, your files aren't encrypted, so you can still switch the password off by hand: close Kaydence completely, open <code>%LocalAppData%\Kaydence\settings.json</code> in Notepad, change <code>"PasswordEnabled": true</code> to <code>false</code>, save, and open Kaydence again.</p>
+    </section>
+
+    <section id="backups">
+      <h2>Backups</h2>
+      <p>Kaydence makes a zip copy of your whole diary once a day, the first time you open it that day. It keeps them for as long as you choose in Settings, then tidies older ones away.</p>
+      <table>
+        <tr><th>Setting</th><th>What it does</th></tr>
+        <tr><td><b>Back up automatically every day</b></td><td>Makes the daily copy. Leave this on.</td></tr>
+        <tr><td><b>Keep backups for</b></td><td>7, 14, 30 or 90 days.</td></tr>
+        <tr><td><b>Backup folder</b></td><td>Where the copies go. Click <b>Change</b> to pick another folder, like a USB stick or a second drive, and <b>Open</b> to look inside.</td></tr>
+        <tr><td><b>Restore from a backup</b></td><td>Puts your diary back to how it was in a backup. See <a href="#restore">Restoring from a backup</a>.</td></tr>
+        <tr><td><b>Back up now</b></td><td>Makes an extra copy straight away, with the time in its name.</td></tr>
+      </table>
+      <h3>What the backup files are called</h3>
+      <ul>
+        <li><code>Kaydence-2026-09-30.zip</code> is the automatic daily backup.</li>
+        <li><code>Kaydence-2026-09-30-181502.zip</code> is one you made with Back up now.</li>
+        <li><code>Kaydence-before-restore-2026-09-30-181502.zip</code> is made automatically just before a restore, holding your diary as it was.</li>
+      </ul>
+      <div class="box tip"><b>Two places are safer than one</b>By default backups sit on the same PC as your diary. That protects you from mistakes, but not from the PC breaking. Now and then, copy your backups folder to a USB stick, or set the backup folder to a second drive.</div>
+      <p>If the backup folder is on a USB stick that isn't plugged in, that day's backup is skipped and Kaydence tries again the next time you open it.</p>
+    </section>
+
+    <section id="restore">
+      <h2>Restoring from a backup</h2>
+      <h3>The easy way, inside Kaydence</h3>
+      <ol class="steps">
+        <li>Open <b>Settings</b> and go to <b>Backups</b>.</li>
+        <li>Click <b>Restore...</b> next to Restore from a backup.</li>
+        <li>Choose the backup zip you want. The date is in its name.</li>
+        <li>Read the message and click <b>Yes</b>.</li>
+        <li>Kaydence zips up your diary as it is right now into your backups folder, puts the backup in its place, and restarts itself.</li>
+      </ol>
+      <div class="box warn"><b>Restoring an encrypted backup</b>A backup is opened with the password, or recovery file, you had <b>when that backup was made</b>. If you've changed your password since, Kaydence will ask for the old one after restarting.</div>
+      <div class="box good"><b>You can always undo a restore</b>Because Kaydence saves a <code>Kaydence-before-restore</code> zip first, restoring never loses anything. If you picked the wrong backup, just restore that before-restore zip.</div>
+      <h3>By hand, if Kaydence won't open</h3>
+      <ol class="steps">
+        <li>Make sure Kaydence is closed, including by the clock.</li>
+        <li>Press <kbd>Win</kbd>+<kbd>R</kbd>, type <code>%LocalAppData%\Kaydence</code> and press Enter.</li>
+        <li>Rename the <code>Diary</code> folder to something like <code>Diary old</code>. Don't delete it yet.</li>
+        <li>Open the <code>Backups</code> folder, right click the backup you want and choose <b>Extract All</b>.</li>
+        <li>Extract it to a new folder called <code>Diary</code> inside <code>%LocalAppData%\Kaydence</code>. Inside it you should see an <code>entries</code> folder and an <code>index.json</code> file straight away, not another folder first.</li>
+        <li>Open Kaydence and check everything looks right. Once you're happy, you can delete <code>Diary old</code>.</li>
+      </ol>
+      <h3>Getting back just one day</h3>
+      <ol class="steps">
+        <li>Close Kaydence completely.</li>
+        <li>Open the backup zip by double clicking it, then go into <code>entries</code>, the year, and find the day's folder, like <code>2026-09-30</code>.</li>
+        <li>Copy that folder into the same place in your diary: <code>%LocalAppData%\Kaydence\Diary\entries\2026</code>. Replace the existing one if Windows asks.</li>
+        <li>Delete <code>index.json</code> in the <code>Diary</code> folder. Kaydence rebuilds it by itself next time it opens, so the calendar dots are right.</li>
+        <li>Open Kaydence.</li>
+      </ol>
+    </section>
+
+    <section id="deleted">
+      <h2>Getting a deleted day back</h2>
+      <p>When you delete a day from the calendar, it's moved to <code>Diary\deleted</code> with a name like <code>2026-09-30 deleted 2026-10-01 101500</code>. To bring it back:</p>
+      <ol class="steps">
+        <li>Close Kaydence completely.</li>
+        <li>Open your diary folder (Settings, Your diary folder, or the folder button at the bottom of the sidebar), then open <code>deleted</code>. Settings also has a button that opens the deleted folder directly.</li>
+        <li>Rename the day's folder back to just the date, like <code>2026-09-30</code>.</li>
+        <li>Move it into <code>Diary\entries\2026</code> (use the right year).</li>
+        <li>Delete <code>index.json</code> in the <code>Diary</code> folder so the calendar is rebuilt.</li>
+        <li>Open Kaydence. The day is back with its dot on the calendar.</li>
+      </ol>
+    </section>
+
+    <section id="files">
+      <h2>Where everything is kept</h2>
+      <p>Everything lives in <code>%LocalAppData%\Kaydence</code>, which is usually <code>C:\Users\YourName\AppData\Local\Kaydence</code>. This folder is only on your PC and isn't synced to OneDrive. To get there quickly, press <kbd>Win</kbd>+<kbd>R</kbd>, type <code>%LocalAppData%\Kaydence</code> and press Enter.</p>
+      <table>
+        <tr><th>File or folder</th><th>What's in it</th></tr>
+        <tr><td><code>Diary\entries\2026\2026-09-30\</code></td><td>One folder per day. <code>day.json</code> holds your writing and check-in, <code>ink.isf</code> holds drawings, the <code>img-...</code> files are your pictures and the <code>voice-...</code> files are your voice notes. When your password is on, they're all encrypted.</td></tr>
+        <tr><td><code>Diary\index.json</code></td><td>A small summary of every day for the calendar dots. Safe to delete, it's rebuilt automatically.</td></tr>
+        <tr><td><code>Diary\medications.json</code></td><td>Your saved medication list.</td></tr>
+        <tr><td><code>Diary\keys.json</code></td><td>Only when your password is on. The lock for your encrypted diary, holding the diary key wrapped by your password and your recovery file. Never delete it, your diary can't be opened without it.</td></tr>
+        <tr><td><code>Diary\counters.json</code></td><td>Your days since counters.</td></tr>
+        <tr><td><code>Diary\deleted\</code></td><td>Days you deleted from the calendar.</td></tr>
+        <tr><td><code>Backups\</code></td><td>Daily backup zips, unless you chose another folder.</td></tr>
+        <tr><td><code>settings.json</code></td><td>All your settings, including your password lock (only a scrambled hash, never the password itself).</td></tr>
+        <tr><td><code>Guide\</code></td><td>A copy of this guide, refreshed each time you open it.</td></tr>
+        <tr><td><code>Logs\</code></td><td>A log of what Kaydence did each day, kept for 14 days. See <a href="#logs">Logs</a>.</td></tr>
+      </table>
+      <p>Kaydence always writes a temporary file first and then swaps it in, so a crash or power cut can never leave a half written day. If a day's file is ever damaged, Kaydence keeps a copy called <code>day.json.broken-...</code> before carrying on.</p>
+    </section>
+
+    <section id="newpc">
+      <h2>Moving to a new PC</h2>
+      <ol class="steps">
+        <li>On the old PC, open Settings, Backups and click <b>Back up now</b>.</li>
+        <li>Copy the new backup zip to a USB stick. If your diary is encrypted, you'll need your password or recovery file on the new PC too.</li>
+        <li>Install Kaydence on the new PC and open it.</li>
+        <li>Go to Settings, Backups, click <b>Restore...</b> and choose the zip from your USB stick.</li>
+        <li>Kaydence restarts. If the backup is encrypted, it asks for your password, then opens your whole diary. Set up your other settings again on the new PC, as settings aren't part of the diary backup.</li>
+      </ol>
+    </section>
+
+    <section id="settings">
+      <h2>Every setting explained</h2>
+      <p>Open Settings from the cog at the bottom of the icon rail. Every change works straight away and saves by itself.</p>
+      <h3>Look and feel</h3>
+      <table>
+        <tr><td><b>Theme</b></td><td>Follow Windows, Light or Dark. The moon or sun button in the sidebar switches quickly too.</td></tr>
+        <tr><td><b>Accent colour</b></td><td>The colour of buttons, headings and today's date: purple, pink, blue, teal, green or orange.</td></tr>
+        <tr><td><b>Page style</b></td><td>Plain, lined, grid or dots behind your writing.</td></tr>
+        <tr><td><b>Text size for new writing</b></td><td>Small, medium, large or extra large for new text boxes.</td></tr>
+        <tr><td><b>Weeks start on</b></td><td>Monday or Sunday, for every calendar.</td></tr>
+        <tr><td><b>Font for your writing</b></td><td>Segoe UI, Verdana, Comic Sans, Century Gothic or Handwriting. See <a href="#comfort">Fonts and easier reading</a>.</td></tr>
+        <tr><td><b>Roomy spacing</b></td><td>More space between lines of writing.</td></tr>
+        <tr><td><b>Show the mood key</b></td><td>The little list of faces under the calendar.</td></tr>
+        <tr><td><b>Show days since counters</b></td><td>The counters under the calendar. See <a href="#counters">Days since counters</a>.</td></tr>
+        <tr><td><b>Show tips when you hover over buttons</b></td><td>The small labels that pop up over buttons.</td></tr>
+      </table>
+      <h3>Today panel</h3>
+      <table>
+        <tr><td><b>Open the Today panel when Kaydence starts</b></td><td>Whether the check-in panel is showing when you open Kaydence.</td></tr>
+        <tr><td><b>Weight</b></td><td>kg, stone and pounds, or pounds.</td></tr>
+        <tr><td><b>Sections</b></td><td>One row for each check-in section, in the order they appear. The arrows move a section up or down, and the switch shows or hides it. Hiding one never deletes what you've written.</td></tr>
+      </table>
+      <h3>Writing</h3>
+      <table>
+        <tr><td><b>Spell check</b></td><td>Red squiggles under misspelt words, in UK English.</td></tr>
+      </table>
+      <h3>Reminder</h3>
+      <p>See <a href="#reminder">Daily reminder</a>.</p>
+      <h3>Starting and closing</h3>
+      <p>See <a href="#windows">Starting with Windows and the clock icon</a> and <a href="#hotkey">Open Kaydence from anywhere</a>.</p>
+      <h3>Privacy and lock</h3>
+      <p>See <a href="#password">Password and lock</a> and <a href="#recovery">Recovery file</a>. The lock options are greyed out until you set a password.</p>
+      <h3>Backups and Your diary folder</h3>
+      <p>See <a href="#backups">Backups</a>. Your diary folder shows where your diary is and opens it, opens the deleted days folder, has <b>Export your diary</b> (see <a href="#export">Exporting your diary</a>), and shows <b>Space used</b>: how much room your diary takes up (split into pictures, voice notes, and pages and drawings), plus your backups, your logs and the free space left on the drive. It's there for information only, and <b>Check again</b> updates it.</p>
+      <h3>About Kaydence, and Help and feedback</h3>
+      <p>Shows which version you're running, opens this guide, shows the welcome tour again, and has the buttons for updates, making a bug report, reporting a problem and suggesting a feature. See <a href="#updates">Updates, problems and ideas</a>.</p>
+    </section>
+
+    <section id="windows">
+      <h2>Starting with Windows and the clock icon</h2>
+      <p>The area by the clock at the bottom right of your screen is called the notification area. Kaydence can keep a small icon there.</p>
+      <table>
+        <tr><th>Setting</th><th>What it does</th></tr>
+        <tr><td><b>Start Kaydence when you sign in to Windows</b></td><td>Kaydence opens by itself when you log in.</td></tr>
+        <tr><td><b>Start hidden in the notification area</b></td><td>When it starts with Windows, it waits quietly by the clock instead of opening its window.</td></tr>
+        <tr><td><b>Show Kaydence in the notification area</b></td><td>Shows the icon by the clock.</td></tr>
+        <tr><td><b>Closing the window keeps Kaydence running</b></td><td>The X button tucks Kaydence away by the clock instead of closing it.</td></tr>
+        <tr><td><b>Minimising hides Kaydence by the clock</b></td><td>Minimising hides it from the taskbar and keeps it by the clock.</td></tr>
+      </table>
+      <p>Click the icon to open Kaydence. Right click it for <b>Open Kaydence</b>, <b>Lock now</b> and <b>Exit Kaydence</b>. If the icon is hidden, click the small up arrow by the clock to see all icons.</p>
+      <p>Only one copy of Kaydence ever runs. Opening it again just brings the window you already have to the front.</p>
+    </section>
+
+    <section id="reminder">
+      <h2>Daily reminder</h2>
+      <p>Kaydence can pop up a little Windows notification to remind you to write.</p>
+      <ol class="steps">
+        <li>Open Settings and go to <b>Reminder</b>.</li>
+        <li>Switch on <b>Remind me to write</b>.</li>
+        <li>Pick a time, from 8am to 11pm.</li>
+      </ol>
+      <ul>
+        <li>With <b>Only if nothing has been written that day</b> on, you're only reminded on days you haven't written yet.</li>
+        <li>Click the notification to jump straight to today's page.</li>
+        <li>You get at most one reminder a day. If Kaydence wasn't running at the reminder time, it reminds you when it next starts that day.</li>
+      </ul>
+      <div class="box warn"><b>Kaydence needs to be running</b>The reminder comes from Kaydence itself, so it has to be open or tucked away by the clock. The easy way is to switch on <b>Start Kaydence when you sign in to Windows</b> and <b>Closing the window keeps Kaydence running</b>. If you don't see notifications, check Windows Settings, System, Notifications.</div>
+    </section>
+
+    <section id="hotkey">
+      <h2>Open Kaydence from anywhere</h2>
+      <p>Press <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> in any app and Kaydence jumps to the front, even when it's tucked away by the clock. Great for jotting something down the moment it happens.</p>
+      <p>Change it in Settings, Starting and closing, <b>Shortcut to open Kaydence from anywhere</b>: Off, <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>, <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>K</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd>.</p>
+      <p>If another app already uses the shortcut you picked, the bottom of the sidebar says so. Just pick a different one.</p>
+    </section>
+
+    <section id="comfort">
+      <h2>Fonts and easier reading</h2>
+      <p>In Settings, Look and feel, <b>Font for your writing</b> changes the font on your page, in sticky notes and in checklists. Your old writing switches to the new font too.</p>
+      <table>
+        <tr><th>Font</th><th>Good for</th></tr>
+        <tr><td><b>Segoe UI</b></td><td>The standard Windows font, clean and familiar.</td></tr>
+        <tr><td><b>Verdana</b></td><td>Wide letters with lots of space between them. Many people with dyslexia find it easier to read.</td></tr>
+        <tr><td><b>Comic Sans</b></td><td>Letters that are all clearly different shapes, which also helps many people with dyslexia.</td></tr>
+        <tr><td><b>Century Gothic</b></td><td>Round and airy.</td></tr>
+        <tr><td><b>Handwriting</b></td><td>Looks like it was written by hand, for a cosier diary feel.</td></tr>
+      </table>
+      <p><b>Roomy spacing</b> adds more space between lines, which makes long entries easier on the eyes. <b>Text size for new writing</b> is in the same place.</p>
+    </section>
+
+    <section id="updates">
+      <h2>Updates, problems and ideas</h2>
+      <h3>Updates</h3>
+      <p>Once a day, Kaydence asks GitHub for the number of the latest version. If there's a newer one, it tells you what's new and offers to open the download page. <b>No</b> skips that version, <b>Cancel</b> asks again another day.</p>
+      <div class="box good"><b>Nothing from your diary is ever sent</b>The only thing Kaydence asks is "what's the latest version?". Switch it off in Settings, Help and feedback, <b>Check for updates automatically</b>, and use <b>Check now</b> whenever you like instead.</div>
+      <h3>Reporting a problem or suggesting a feature</h3>
+      <p>In Settings, Help and feedback, <b>Report a problem</b> and <b>Suggest a feature</b> open a new GitHub issue in your web browser, with your Kaydence and Windows version already filled in. You'll need a free GitHub account to send it. Describe what happened, and please attach a bug report (see below) so the problem can be found quickly.</p>
+      <h3>Making a bug report</h3>
+      <ol class="steps">
+        <li>Open <b>Settings, Help and feedback</b> and click <b>Make a bug report</b>.</li>
+        <li>Choose where to save it. Kaydence suggests your desktop.</li>
+        <li>Kaydence saves a zip file and shows it in File Explorer, then offers to open a new problem report on GitHub.</li>
+        <li>Drag the zip file into the problem report.</li>
+      </ol>
+      <p>The zip holds the last three days of logs, your Kaydence and Windows versions, how much space your diary uses, and a list of your settings. Passwords, keys and hashes are only ever shown as "set" or "none". Nothing you wrote is included. You can open the zip and read every file before sending it.</p>
+    </section>
+
+    <section id="logs">
+      <h2>Logs</h2>
+      <p>Kaydence keeps a log of what it does, like a black box recorder. If something goes wrong, the log shows exactly where.</p>
+      <ul>
+        <li>Open it from <b>Settings, Help and feedback, Logs, Open log folder</b>. There's one file per day, like <code>kaydence-2026-09-30.log</code>, kept for 14 days.</li>
+        <li>Each time Kaydence starts, the log notes the app version, your Windows and .NET versions, screen size and similar details about your PC.</li>
+        <li>After that, every line has the date and time to the millisecond, what part of Kaydence it's about, and what happened: which day was opened, how long saving took, whether a picture loaded, which settings changed, and any errors in full.</li>
+      </ul>
+      <div class="box good"><b>Your diary never goes in the log</b>The log never contains what you wrote, your check-in answers, your password, your recovery key, what you searched for, or anything you copied. Your Windows user name is hidden in file paths. You're welcome to open a log in Notepad and check before sending it.</div>
+      <p>When you report a problem, the easiest way to share your logs is <a href="#updates">Make a bug report</a>, which zips up the last few days for you.</p>
+    </section>
+
+    <section id="medical">
+      <h2>Health features are not medical advice</h2>
+      <p>Kaydence is a diary, not a medical app or medical device. The medication, symptoms, blood pressure, weight, transition and period tools are there so you can keep your own notes and share them with your doctor if you want to.</p>
+      <ul>
+        <li>Charts, averages and summaries only show what you typed in. They don't diagnose anything or tell you what to do.</li>
+        <li>Period and cycle guesses are rough estimates from your own past cycles. They <b>must never be used as contraception</b> or to plan or avoid a pregnancy.</li>
+        <li>Kaydence doesn't remind you to take medication, check doses or warn about interactions.</li>
+        <li>Always talk to a doctor, nurse or pharmacist about your health, and in an emergency call your local emergency number.</li>
+      </ul>
+      <p>Don't want any of the health tools? Switch off Health, Period and cycle and Transition in the welcome tour, or the individual sections in Settings, Today panel, and they disappear from the check-in panel and the print options.</p>
+    </section>
+
+    <section id="install">
+      <h2>Installing and uninstalling</h2>
+      <p>Kaydence comes as <code>Kaydence-Setup-1.0.0.exe</code> (the number is the version). Run it and click through. It installs just for you, in <code>%LocalAppData%\Programs\Kaydence</code>, so it never asks for an administrator password.</p>
+      <ul>
+        <li>It adds Kaydence to the Start menu, and a desktop shortcut if you tick that box.</li>
+        <li>Everything Kaydence needs is inside, there's nothing else to install.</li>
+        <li>To update, run the newer setup file. It closes Kaydence if it's open, updates it, and keeps all your settings.</li>
+      </ul>
+      <h3>Uninstalling</h3>
+      <p>Open Windows Settings, Apps, Installed apps, find <b>Kaydence</b> and choose <b>Uninstall</b>. It removes the app and its start with Windows entry.</p>
+      <div class="box good"><b>Your diary is never removed</b>Uninstalling leaves your diary, settings and backups in <code>%LocalAppData%\Kaydence</code>. Install Kaydence again and everything is exactly where you left it. To remove your diary too, delete that folder yourself after uninstalling.</div>
+    </section>
+
+    <section id="shortcuts">
+      <h2>Keyboard shortcuts</h2>
+      <table>
+        <tr><th>Keys</th><th>What it does</th></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>Go to today</td></tr>
+        <tr><td><kbd>Alt</kbd>+<kbd>Left</kbd> or <kbd>Ctrl</kbd>+<kbd>Page Up</kbd></td><td>Previous day</td></tr>
+        <tr><td><kbd>Alt</kbd>+<kbd>Right</kbd> or <kbd>Ctrl</kbd>+<kbd>Page Down</kbd></td><td>Next day</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo on the page</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo on the page</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>Paste. Pictures always float on the page</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>B</kbd>, <kbd>Ctrl</kbd>+<kbd>I</kbd>, <kbd>Ctrl</kbd>+<kbd>U</kbd></td><td>Bold, italic and underline</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>]</kbd> and <kbd>Ctrl</kbd>+<kbd>[</kbd></td><td>Bigger and smaller text</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+mouse wheel</td><td>Zoom the page</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>plus</kbd>, <kbd>Ctrl</kbd>+<kbd>minus</kbd>, <kbd>Ctrl</kbd>+<kbd>0</kbd></td><td>Zoom in, zoom out, back to 100%</td></tr>
+        <tr><td><kbd>Enter</kbd>, <kbd>Backspace</kbd>, <kbd>Ctrl</kbd>+<kbd>Space</kbd> in a checklist</td><td>New line, join lines, tick</td></tr>
+        <tr><td><kbd>Shift</kbd> while drawing a shape</td><td>Straight lines, squares and perfect circles</td></tr>
+        <tr><td><kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd></td><td>Bring Kaydence to the front from any app (you can change this)</td></tr>
+        <tr><td><kbd>Delete</kbd></td><td>Delete the selected picture or lasso selection</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Back to the Select and type tool</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>Search</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>P</kbd></td><td>Print or save as PDF</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td>Lock (once a password is set)</td></tr>
+        <tr><td><kbd>F1</kbd></td><td>Open this guide</td></tr>
+        <tr><td>Mouse wheel over the calendar</td><td>Flick through months</td></tr>
+        <tr><td>Right click a calendar day</td><td>Open it or delete its entry</td></tr>
+      </table>
+    </section>
+
+    <section id="help">
+      <h2>Troubleshooting</h2>
+      <h3>I clicked on the page but nothing happens</h3>
+      <p>You probably have a pen, eraser or shape picked on the Draw tab, so clicks draw instead. Press <kbd>Esc</kbd>, or click the Home tab.</p>
+      <h3>I can't select a picture</h3>
+      <p>Again, switch to Select and type. The lasso tool only selects drawings.</p>
+      <h3>A picture shows "Picture not found"</h3>
+      <p>Its file is missing from the day's folder. Restore just that day from a backup, see <a href="#restore">Getting back just one day</a>.</p>
+      <h3>The page looks tiny or huge</h3>
+      <p>You've zoomed. Press <kbd>Ctrl</kbd>+<kbd>0</kbd> to go back to 100%.</p>
+      <h3>I don't get my reminder</h3>
+      <p>Kaydence has to be running at the time, even if it's only by the clock. Also check that notifications are allowed in Windows Settings, System, Notifications, and that Do not disturb or Focus is off.</p>
+      <h3>My voice note is silent</h3>
+      <p>See <a href="#voice">If Kaydence can't hear you</a>. Record a quick test and watch the bars move while you talk.</p>
+      <h3>Kaydence asks for an old password after a restore</h3>
+      <p>The backup was made when you had a different password. Type that one, or use the recovery file you had then. Once it opens, change the password in Settings if you like.</p>
+      <h3>The calendar dots look wrong</h3>
+      <p>Close Kaydence, delete <code>Diary\index.json</code> and open Kaydence again. It rebuilds the summary from your day files.</p>
+      <h3>Kaydence says it couldn't save</h3>
+      <p>Usually the disk is full or another program has the file open. Your writing is still on screen. Free up some space or close other programs, then type a letter and delete it to trigger another save.</p>
+      <h3>I closed Kaydence but it's still running</h3>
+      <p>You've switched on <b>Closing the window keeps Kaydence running</b>. Right click the icon by the clock and choose <b>Exit Kaydence</b>.</p>
+      <h3>Kaydence doesn't start with Windows</h3>
+      <p>Switch <b>Start Kaydence when you sign in to Windows</b> off and on again from the copy of Kaydence you normally use, so Windows remembers the right one. Also check Task Manager, Startup apps, to make sure Kaydence isn't disabled there.</p>
+      <h3>I want to start completely fresh</h3>
+      <p>Back up first! Then close Kaydence and rename <code>%LocalAppData%\Kaydence</code> to something else. Kaydence starts as new next time. Rename it back to return to your old diary.</p>
+      <h3>Something went wrong</h3>
+      <p>Kaydence tries to keep running and shows a message. The full details are in today's log, see <a href="#logs">Logs</a>.</p>
+    </section>
+
+    <footer>Kaydence, a private diary made by <a href="https://kaydee.codes">KaydeeCodes</a>. This guide is for version 1.0.</footer>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+name: Report a problem
+description: Something in Kaydence isn't working right
+title: "Problem: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for letting me know. Please never paste anything from your diary here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: And what did you expect to happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can I make it happen?
+      placeholder: |
+        1. Open a day
+        2. Paste a picture
+        3. ...
+  - type: input
+    id: version
+    attributes:
+      label: Kaydence version
+      description: Shown in Settings, About Kaydence
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2"
+  - type: textarea
+    id: report
+    attributes:
+      label: Bug report zip
+      description: In Kaydence, open Settings, Help and feedback and click Make a bug report, then drag the zip file in here. It holds logs and settings only, never anything from your diary.

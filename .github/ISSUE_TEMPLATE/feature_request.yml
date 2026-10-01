@@ -1,0 +1,15 @@
+name: Suggest a feature
+description: An idea to make Kaydence better
+title: "Idea: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you love Kaydence to do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: How would it help you?

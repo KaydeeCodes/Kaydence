@@ -1,0 +1,55 @@
+<UserControl x:Class="Kaydence.Controls.PageTextItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- My coloured paper, only used when I'm a sticky note -->
+        <Border x:Name="Paper" Grid.Row="0" Grid.RowSpan="2" CornerRadius="4" Visibility="Collapsed" IsHitTestVisible="False">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Direction="270" Opacity="0.18"/>
+            </Border.Effect>
+        </Border>
+
+        <!-- My faint outline that only shows while I'm hovering or typing -->
+        <Border x:Name="Frame" Grid.Row="0" Grid.RowSpan="2" CornerRadius="6" BorderThickness="1"
+                BorderBrush="{DynamicResource Brush.Border}" Opacity="0" IsHitTestVisible="False"/>
+
+        <!-- My grab bar for dragging the text box around -->
+        <Thumb x:Name="MoveThumb" Grid.Row="0" Style="{StaticResource GripThumb}" Cursor="SizeAll" Opacity="0">
+            <Thumb.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="ColourMenu" Header="Sticky note colour" Visibility="Collapsed"/>
+                    <Separator x:Name="ColourSeparator" Visibility="Collapsed"/>
+                    <MenuItem Header="Bring to front" Click="Front_Click"/>
+                    <MenuItem Header="Send to back" Click="Back_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="DeleteMenu" Header="Delete this text" Click="Delete_Click"/>
+                </ContextMenu>
+            </Thumb.ContextMenu>
+        </Thumb>
+
+        <RichTextBox x:Name="Editor" Grid.Row="1"
+                     Background="Transparent" BorderThickness="0" Padding="2"
+                     Foreground="{DynamicResource Brush.Text}"
+                     CaretBrush="{DynamicResource Brush.Text}"
+                     SelectionBrush="{DynamicResource Brush.Selection}"
+                     AcceptsTab="True" Language="en-GB"
+                     VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled"
+                     FocusVisualStyle="{x:Null}">
+            <RichTextBox.Resources>
+                <Style TargetType="Paragraph">
+                    <Setter Property="Margin" Value="0,0,0,4"/>
+                </Style>
+            </RichTextBox.Resources>
+            <FlowDocument PagePadding="0"/>
+        </RichTextBox>
+
+        <!-- My handle on the right edge for making the box wider or narrower -->
+        <Thumb x:Name="WidthThumb" Grid.Row="1" Width="8" HorizontalAlignment="Right" Margin="0,0,-4,0"
+               Style="{StaticResource EdgeThumb}" Cursor="SizeWE" Opacity="0"/>
+    </Grid>
+</UserControl>

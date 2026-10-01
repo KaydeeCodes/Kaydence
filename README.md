@@ -44,8 +44,8 @@ It's a diary first. Health, period and transition tracking are optional extras y
 
 | | |
 |---|---|
-| ![Dark mode](docs/images/screenshot-day-dark.pn) | ![Insights](docs/images/screenshot-insights.pn) |
-| ![Month view](docs/images/screenshot-month.pn) | ![Print preview](docs/images/screenshot-print.pn) |
+| ![Dark mode](docs/images/screenshot-day-dark.png) | ![Insights](docs/images/screenshot-insights.png) |
+| ![Month view](docs/images/screenshot-month.png) | ![Print preview](docs/images/screenshot-print.png) |
 
 ## Download and install
 

@@ -91,6 +91,9 @@ public partial class DiaryPage : UserControl
         Ink.PreviewMouseLeftButtonDown += Ink_ShapeDown;
         Ink.PreviewMouseMove += Ink_ShapeMove;
         Ink.PreviewMouseLeftButtonUp += Ink_ShapeUp;
+        Ink.PreviewMouseLeftButtonDown += (_, e) => _inputKind = e.StylusDevice == null ? "mouse" : $"{e.StylusDevice.TabletDevice?.Type.ToString() ?? "stylus"} as mouse";
+        Ink.PreviewStylusDown += (_, e) => _inputKind = e.StylusDevice.TabletDevice?.Type.ToString() ?? "stylus";
+        Ink.StrokeCollected += (_, e) => DescribeStroke(e.Stroke);
         HookStrokes();
         ApplyTool();
     }
@@ -993,6 +996,37 @@ public partial class DiaryPage : UserControl
         catch (Exception)
         {
             return new StrokeCollection();
+        }
+    }
+
+    private string _inputKind = "unknown";
+
+    // I note the shape of each new stroke, never what it looks like, so a stroke that jumps across the page is easy to spot in the log
+    private void DescribeStroke(Stroke stroke)
+    {
+        try
+        {
+            var points = stroke.StylusPoints;
+            var biggest = 0.0;
+            var at = 0;
+            for (var i = 1; i < points.Count; i++)
+            {
+                var gap = Math.Sqrt(Math.Pow(points[i].X - points[i - 1].X, 2) + Math.Pow(points[i].Y - points[i - 1].Y, 2));
+                if (gap <= biggest) continue;
+                biggest = gap;
+                at = i;
+            }
+            var bounds = stroke.GetBounds();
+            var dpi = VisualTreeHelper.GetDpi(this);
+            AppContext.TryGetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", out var pointer);
+            var text = $"Stroke from {_inputKind}: {points.Count} points, {bounds.Width:0} x {bounds.Height:0} at {bounds.X:0},{bounds.Y:0}, " +
+                       $"biggest step {biggest:0.0} at point {at}, zoom {_zoom:0.00}, screen scale {dpi.DpiScaleX * 100:0}%, pointer input {pointer}";
+            if (biggest > 120) Log.Warn("Ink", text + ". That step looks like a jump");
+            else Log.Debug("Ink", text);
+        }
+        catch (Exception ex)
+        {
+            Log.Debug("Ink", $"Couldn't describe the stroke: {ex.GetType().Name}");
         }
     }
 

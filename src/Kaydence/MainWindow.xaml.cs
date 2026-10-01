@@ -150,6 +150,7 @@ public partial class MainWindow : Window
         };
         Deactivated += (_, _) => _awaySince = DateTime.Now;
         StateChanged += Window_StateChanged;
+        DpiChanged += (_, e) => Log.Info("Window", $"Moved to a monitor scaled at {e.NewDpi.DpiScaleX * 100:0}% (was {e.OldDpi.DpiScaleX * 100:0}%)");
         PreviewKeyDown += OnPreviewKeyDown;
         Closing += Window_Closing;
 

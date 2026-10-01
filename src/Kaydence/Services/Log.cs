@@ -82,11 +82,43 @@ public static class Log
         info.AppendLine($"  Culture            {CultureInfo.CurrentCulture.Name}, UI {CultureInfo.CurrentUICulture.Name}");
         info.AppendLine($"  Time zone          {TimeZoneInfo.Local.Id} (UTC{TimeZoneInfo.Local.GetUtcOffset(DateTime.Now):hh\\:mm})");
         info.AppendLine($"  Screen             {SystemParameters.PrimaryScreenWidth} x {SystemParameters.PrimaryScreenHeight} (virtual {SystemParameters.VirtualScreenWidth} x {SystemParameters.VirtualScreenHeight})");
+        foreach (var line in Monitors()) info.AppendLine("  " + line);
+        AppContext.TryGetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", out var pointer);
+        info.AppendLine($"  Pen input          {(pointer ? "Windows pointer input" : "older Windows ink input")}");
         info.AppendLine($"  Graphics tier      {RenderCapability.Tier >> 16}");
         info.AppendLine($"  High contrast      {SystemParameters.HighContrast}");
         info.AppendLine($"  Started with       {(args.Length == 0 ? "no arguments" : string.Join(" ", args))}");
         info.AppendLine("==================================================================");
         Append(info.ToString());
+    }
+
+    [DllImport("shcore.dll")]
+    private static extern int GetDpiForMonitor(IntPtr monitor, int type, out uint dpiX, out uint dpiY);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromPoint(System.Drawing.Point point, uint flags);
+
+    // I list every monitor with its size in pixels, where it sits and how much Windows scales it
+    private static IEnumerable<string> Monitors()
+    {
+        var lines = new List<string>();
+        try
+        {
+            var screens = System.Windows.Forms.Screen.AllScreens;
+            for (var i = 0; i < screens.Length; i++)
+            {
+                var b = screens[i].Bounds;
+                var scale = "unknown";
+                var handle = MonitorFromPoint(new System.Drawing.Point(b.Left + b.Width / 2, b.Top + b.Height / 2), 2);
+                if (handle != IntPtr.Zero && GetDpiForMonitor(handle, 0, out var dpi, out _) == 0) scale = $"{dpi * 100 / 96}%";
+                lines.Add($"Monitor {i + 1}          {b.Width} x {b.Height} pixels at {b.Left},{b.Top}, scale {scale}{(screens[i].Primary ? ", main" : "")}");
+            }
+        }
+        catch (Exception ex)
+        {
+            lines.Add($"Monitors           couldn't list them: {ex.GetType().Name}");
+        }
+        return lines;
     }
 
     public static void EndSession(string reason) => Info("App", $"Session ended ({reason}), ran for {Clock.Elapsed:hh\\:mm\\:ss}");

@@ -16,7 +16,7 @@
   <a href="#reporting-a-problem">Report a problem</a>
 </p>
 
-![The Kaydence day page in light mode](docs/images/screenshot-day-light.pn)
+![The Kaydence day page in light mode](docs/images/screenshot-day-light.png)
 
 ## What is Kaydence?
 

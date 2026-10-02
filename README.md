@@ -32,6 +32,7 @@ It's a diary first. Health, period and transition tracking are optional extras y
 - **Photos and drawings**: paste, drag in, crop, rotate, and draw over the top with pens, highlighters and shapes
 - **Voice notes** of up to five minutes, played back right on the page
 - **A daily check-in** for mood, sleep, tasks, wins and struggles, in whatever order you like
+- **A body map** to mark where it hurts, with a heatmap over time in Insights and your doctor printouts
 - **Look back** with Week, Month, Memories ("on this day") and Search
 - **Insights**: mood over time, by weekday and season, and your year in pixels
 - **Print or save as PDF**, including a tidy summary to take to a doctor

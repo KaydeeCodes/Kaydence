@@ -321,15 +321,50 @@ public partial class InsightsView : UserControl
     private void AddHealth(List<(DateOnly Day, CheckIn CheckIn)> days, DateOnly from, DateOnly to)
     {
         var charts = HealthCharts.Build(days, from, to, _settings?.WeightUnit ?? "kg", forPrint: false);
+        var heat = BodyMap.Heat(days.Select(d => (IReadOnlyDictionary<string, int>?)d.CheckIn.Symptoms.Areas), out var totals);
         Body.Children.Add(UiKit.SectionLabel("Your health"));
-        if (charts.Count == 0)
+        if (charts.Count == 0 && heat.Count == 0)
         {
             Body.Children.Add(Empty("Sleep, weight, blood pressure and pain charts show up here once you've filled them in on a few days."));
             return;
         }
         var wrap = new WrapPanel();
+        if (heat.Count > 0) wrap.Children.Add(PainHeatmap(heat, totals));
         foreach (var (title, note, chart) in charts) wrap.Children.Add(ChartPanel(title, chart, 520, note));
         Body.Children.Add(wrap);
+    }
+
+    // I show where it hurt most in this time as a body heatmap, with the worst areas listed beside it
+    private static FrameworkElement PainHeatmap(Dictionary<string, double> heat, Dictionary<string, (int Days, int Worst)> totals)
+    {
+        string Tip(string key) => totals.TryGetValue(key, out var t)
+            ? $"{BodyMap.LabelFor(key)}: {t.Days} {(t.Days == 1 ? "day" : "days")}, worst {BodyMap.LevelNames[t.Worst].ToLowerInvariant()}"
+            : BodyMap.LabelFor(key);
+        var map = new BodyMap(editable: false) { Width = 230 };
+        map.ShowHeat(heat, Tip);
+
+        var list = new StackPanel { Margin = new Thickness(20, 6, 0, 0), VerticalAlignment = VerticalAlignment.Top };
+        foreach (var key in totals.Keys.OrderByDescending(k => heat[k]).Take(8))
+        {
+            var row = new DockPanel { Margin = new Thickness(0, 0, 0, 6) };
+            var swatch = new Border { Width = 10, Height = 10, CornerRadius = new CornerRadius(3), Margin = new Thickness(0, 3, 8, 0),
+                Background = new SolidColorBrush(BodyMap.HeatColour(heat[key])), VerticalAlignment = VerticalAlignment.Top };
+            DockPanel.SetDock(swatch, Dock.Left);
+            row.Children.Add(swatch);
+            row.Children.Add(UiKit.Text(Tip(key), 12.5, "Brush.Text", wrap: true));
+            list.Children.Add(row);
+        }
+
+        var left = new StackPanel();
+        left.Children.Add(map);
+        left.Children.Add(BodyMap.HeatKey(forPrint: false));
+        var content = new Grid();
+        content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        content.ColumnDefinitions.Add(new ColumnDefinition());
+        content.Children.Add(left);
+        Grid.SetColumn(list, 1);
+        content.Children.Add(list);
+        return ChartPanel("Where it hurt", content, 520, "Darker red means more days and worse pain in that area. Hover over an area for details.");
     }
 
     // I show my cycle history as bars, with the period part in pink, plus my averages and a rough guess at what's next

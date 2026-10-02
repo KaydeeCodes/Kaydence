@@ -102,12 +102,16 @@ public sealed class SymptomsInfo : Observable
 {
     private int? _pain;
     private string? _notes;
+    private Dictionary<string, int>? _areas;
 
     public int? Pain { get => _pain; set => Set(ref _pain, value); }
     public string? Notes { get => _notes; set => Set(ref _notes, value); }
 
+    // I keep where it hurts as body area keys with 1 for mild, 2 for moderate and 3 for severe, and I always swap in a new one so the change is noticed
+    public Dictionary<string, int>? Areas { get => _areas; set => Set(ref _areas, value is { Count: > 0 } ? value : null); }
+
     [JsonIgnore]
-    public bool HasData => Pain.HasValue || CheckIn.Has(Notes);
+    public bool HasData => Pain.HasValue || CheckIn.Has(Notes) || Areas is { Count: > 0 };
 }
 
 public sealed class SleepInfo : Observable

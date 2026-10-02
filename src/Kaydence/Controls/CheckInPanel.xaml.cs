@@ -33,6 +33,7 @@ public partial class CheckInPanel : UserControl
     private DateOnly _day;
     private bool _loading;
     private List<TaskItem> _carryTasks = new();
+    private readonly BodyMap _painMap = new(editable: true);
 
     public event Action? Changed;
     public event Action? SettingsChanged;
@@ -43,6 +44,13 @@ public partial class CheckInPanel : UserControl
     {
         InitializeComponent();
         MedList.ItemsSource = _medRows;
+        PainMapHost.Content = _painMap;
+        _painMap.AreasChanged += areas =>
+        {
+            if (_checkIn == null) return;
+            _checkIn.Symptoms.Areas = areas;
+            Log.Debug("CheckIn", $"Pain areas marked: {areas.Count}");
+        };
         Mood.ValueChanged += value =>
         {
             if (_checkIn != null) _checkIn.Mood = value;
@@ -264,6 +272,7 @@ public partial class CheckInPanel : UserControl
 
             Mood.Value = checkIn.Mood;
             SetChips(PainChips, checkIn.Symptoms.Pain?.ToString(CultureInfo.InvariantCulture));
+            _painMap.Show(checkIn.Symptoms.Areas);
             SetChips(FlowChips, checkIn.Cycle.Flow);
             var feelings = (checkIn.Cycle.Symptoms ?? "").Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
             foreach (var chip in CycleFeelingChips.Children.OfType<ToggleButton>()) chip.IsChecked = feelings.Contains((string)chip.Tag);
@@ -482,7 +491,11 @@ public partial class CheckInPanel : UserControl
         CaffeineHeader.Summary = h.Caffeine > 0 ? $"{h.Caffeine} drinks" : null;
         SmokingHeader.Summary = h.Smoked ? (h.Cigarettes is int smoked ? $"{smoked} today" : "Yes") : null;
         AlcoholHeader.Summary = h.Drank ? (h.Alcohol is double drank ? $"{drank:0.#} today" : "Yes") : null;
-        SymptomsHeader.Summary = c.Symptoms.Pain is { } pain ? $"Pain {pain}/10" : Short(c.Symptoms.Notes);
+        var areaCount = c.Symptoms.Areas?.Count(a => a.Value is >= 1 and <= 3) ?? 0;
+        var areaWords = areaCount == 0 ? null : areaCount == 1 ? "1 area" : $"{areaCount} areas";
+        SymptomsHeader.Summary = c.Symptoms.Pain is { } pain ? (areaWords == null ? $"Pain {pain}/10" : $"Pain {pain}/10, {areaWords}") : areaWords ?? Short(c.Symptoms.Notes);
+        PainAreasText.Text = BodyMap.Describe(c.Symptoms.Areas);
+        PainAreasText.Visibility = areaCount > 0 ? Visibility.Visible : Visibility.Collapsed;
         CycleHeader.Summary = c.Cycle.Flow ?? (CheckIn.Has(c.Cycle.Symptoms) ? "Noted" : Short(c.Cycle.Notes));
         if (_store != null && CycleSection.Visibility == Visibility.Visible)
         {

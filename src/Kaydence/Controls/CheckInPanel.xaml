@@ -95,7 +95,13 @@
                     <StackPanel DataContext="{Binding Symptoms}">
                         <TextBlock Style="{StaticResource FieldLabel}" Text="Pain level (0 is none, 10 is the worst)" Margin="0,0,0,5"/>
                         <WrapPanel x:Name="PainChips"/>
-                        <TextBox Margin="0,4,0,0" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="Where it hurts" Margin="0,8,0,2"/>
+                        <TextBlock FontSize="11.5" TextWrapping="Wrap" Margin="0,0,0,6" Foreground="{DynamicResource Brush.TextMuted}"
+                                   Text="Click an area, click again if it's worse. Right click to clear it."/>
+                        <ContentControl x:Name="PainMapHost" Focusable="False" HorizontalAlignment="Center" Width="270"/>
+                        <TextBlock x:Name="PainAreasText" FontSize="11.5" TextWrapping="Wrap" Margin="0,6,0,0"
+                                   Foreground="{DynamicResource Brush.TextMuted}"/>
+                        <TextBox Margin="0,8,0,0" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
                                  Tag="How you feel physically" AcceptsReturn="True" TextWrapping="Wrap"/>
                     </StackPanel>
                 </Expander>

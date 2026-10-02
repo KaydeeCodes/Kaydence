@@ -105,6 +105,7 @@ public static class DayText
             c.Transition.Milestone, c.Symptoms.Notes, c.Sleep.Notes, c.Fitness.Activity, c.Struggles, c.Wins
         };
         bits.AddRange(c.Tasks.Select(t => t.Text));
+        bits.Add(Kaydence.Controls.BodyMap.Describe(c.Symptoms.Areas));
         bits.AddRange(c.Medications.Select(m => m.Name));
         return string.Join("\n", bits.Where(b => !string.IsNullOrWhiteSpace(b)));
     }

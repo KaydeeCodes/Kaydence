@@ -2,7 +2,7 @@
 ; I install just for me, in my own AppData, so it never needs an administrator
 
 #ifndef MyAppVersion
-  #define MyAppVersion "1.0.1"
+  #define MyAppVersion "1.1.0"
 #endif
 #define MyAppName "Kaydence"
 #define MyAppPublisher "KaydeeCodes"

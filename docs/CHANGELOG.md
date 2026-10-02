@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+**New: where it hurts**
+- A body map in Symptoms and pain. Click areas on the front or back of the body to mark where it hurts, and click again to say it's worse: mild, moderate or severe
+- Insights shows a body heatmap of where it hurt most over any stretch of time, with the worst areas listed
+- Printouts for your doctor start with the same heatmap, and every day lists where it hurt and how badly
+- Search finds days by body area, like "knee" or "lower back", and exports include it too
+
 ## 1.0.1
 
 **Simpler password setup**

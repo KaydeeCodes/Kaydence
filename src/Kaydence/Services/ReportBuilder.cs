@@ -81,6 +81,15 @@ public static class ReportBuilder
             }
         }
 
+        if ((options.Health || options.HealthCharts) && PainPicture(entries) is { } pain)
+        {
+            var heading = new Paragraph { FontSize = 11, Foreground = Muted, Margin = new Thickness(0, 10, 0, 2), KeepWithNext = true };
+            heading.Inlines.Add(new Run("Where it hurt") { FontWeight = FontWeights.Bold, Foreground = Ink });
+            heading.Inlines.Add(new Run("   Darker red means more days and worse pain in that area"));
+            document.Blocks.Add(heading);
+            document.Blocks.Add(new BlockUIContainer(pain) { Margin = new Thickness(0, 0, 0, 6) });
+        }
+
         var first = true;
         foreach (var (day, entry) in entries)
         {
@@ -173,6 +182,35 @@ public static class ReportBuilder
         return section;
     }
 
+    // I show a body heatmap of where it hurt over the printed days, with the worst areas listed beside it
+    private static UIElement? PainPicture(List<(DateOnly Day, DayEntry Entry)> entries)
+    {
+        var heat = BodyMap.Heat(entries.Select(e => (IReadOnlyDictionary<string, int>?)e.Entry.CheckIn.Symptoms.Areas), out var totals);
+        if (heat.Count == 0) return null;
+        var map = new BodyMap(editable: false, forPrint: true) { Width = 240 };
+        map.ShowHeat(heat);
+
+        var list = new StackPanel { Margin = new Thickness(24, 20, 0, 0) };
+        foreach (var (key, (days, worst)) in totals.OrderByDescending(t => heat[t.Key]).Take(8))
+        {
+            list.Children.Add(new TextBlock
+            {
+                Text = $"{BodyMap.LabelFor(key)}: {days} {(days == 1 ? "day" : "days")}, worst {BodyMap.LevelNames[worst].ToLowerInvariant()}",
+                FontSize = 12,
+                Foreground = Ink,
+                Margin = new Thickness(0, 0, 0, 4)
+            });
+        }
+
+        var left = new StackPanel();
+        left.Children.Add(map);
+        left.Children.Add(BodyMap.HeatKey(forPrint: true));
+        var row = new StackPanel { Orientation = Orientation.Horizontal };
+        row.Children.Add(left);
+        row.Children.Add(list);
+        return row;
+    }
+
     // I draw the pen, highlighter and shape strokes from the page as a crisp picture that scales to the paper
     private static UIElement? Drawings(DiaryStore store, DateOnly day)
     {
@@ -244,6 +282,7 @@ public static class ReportBuilder
             var meds = c.Medications.Select(m => $"{m.Name} {m.Dose}".Trim() + (m.Time != null ? $" at {m.Time}" : ""));
             Add("Medications", Join(string.Join(", ", meds), c.MedsOther));
             Add("Pain", Join(c.Symptoms.Pain is int pain ? $"{pain} out of 10" : null, c.Symptoms.Notes));
+            Add("Where it hurts", BodyMap.Describe(c.Symptoms.Areas));
             var readings = c.BloodPressure.Where(b => b.HasData).Select(b =>
                 $"{b.Systolic}/{b.Diastolic}" + (b.Pulse.HasValue ? $", pulse {b.Pulse}" : "") + (CheckIn.Has(b.Time) ? $" at {b.Time}" : ""));
             Add("Blood pressure", string.Join("; ", readings));

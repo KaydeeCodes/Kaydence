@@ -15,7 +15,7 @@ public partial class CheckInPanel : UserControl
     // I use these names in settings to hide sections I don't need
     public static readonly (string Key, string Label)[] Sections =
     {
-        ("Feelings", "Feelings"), ("Note", "Note"), ("Medications", "Medications taken"), ("Transition", "Transition"),
+        ("Feelings", "Feelings"), ("Note", "Note"), ("Depression", "Depression"), ("Anxiety", "Anxiety"), ("Medications", "Medications taken"), ("Transition", "Transition"),
         ("Symptoms", "Symptoms and pain"), ("Cycle", "Period and cycle"), ("Sleep", "Sleep"), ("Fitness", "Fitness"), ("BloodPressure", "Blood pressure"),
         ("Weight", "Weight"), ("Water", "Water"), ("Caffeine", "Caffeine"), ("Smoking", "Smoking"), ("Alcohol", "Alcohol"), ("Tasks", "Tasks"), ("Struggles", "Struggles"), ("Wins", "Wins and good things")
     };
@@ -58,6 +58,15 @@ public partial class CheckInPanel : UserControl
         BuildChips(PainChips, Enumerable.Range(0, 11).Select(i => i.ToString(CultureInfo.InvariantCulture)), value =>
         {
             if (_checkIn != null) _checkIn.Symptoms.Pain = value == null ? null : int.Parse(value, CultureInfo.InvariantCulture);
+        });
+        var scale = Enumerable.Range(1, 10).Select(i => i.ToString(CultureInfo.InvariantCulture)).ToList();
+        BuildChips(DepressionChips, scale, value =>
+        {
+            if (_checkIn != null) _checkIn.Depression.Level = value == null ? null : int.Parse(value, CultureInfo.InvariantCulture);
+        });
+        BuildChips(AnxietyChips, scale, value =>
+        {
+            if (_checkIn != null) _checkIn.Anxiety.Level = value == null ? null : int.Parse(value, CultureInfo.InvariantCulture);
         });
         BuildChips(FlowChips, CycleInfo.Flows, value =>
         {
@@ -102,7 +111,7 @@ public partial class CheckInPanel : UserControl
     // I look up each section's card by the name settings uses for it
     private Dictionary<string, FrameworkElement> Map => _map ??= new Dictionary<string, FrameworkElement>
     {
-        ["Feelings"] = FeelingsSection, ["Note"] = NoteSection, ["Medications"] = MedsSection,
+        ["Feelings"] = FeelingsSection, ["Note"] = NoteSection, ["Depression"] = DepressionSection, ["Anxiety"] = AnxietySection, ["Medications"] = MedsSection,
         ["Transition"] = TransitionSection, ["Symptoms"] = SymptomsSection, ["Cycle"] = CycleSection, ["Sleep"] = SleepSection,
         ["Fitness"] = FitnessSection, ["BloodPressure"] = BpSection, ["Weight"] = WeightSection,
         ["Water"] = WaterSection, ["Caffeine"] = CaffeineSection, ["Smoking"] = SmokingSection, ["Alcohol"] = AlcoholSection,
@@ -115,12 +124,18 @@ public partial class CheckInPanel : UserControl
             element.Visibility = hidden.Contains(key) ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    // I turn a saved order into a full one, keeping any sections the saved list doesn't mention in their usual places at the end
+    // I turn a saved order into a full one, keeping any sections the saved list doesn't mention next to where they usually sit
     public static List<string> Ordered(IEnumerable<string>? saved)
     {
         var known = Sections.Select(s => s.Key).ToList();
         var order = (saved ?? Enumerable.Empty<string>()).Where(known.Contains).Distinct().ToList();
-        order.AddRange(known.Where(k => !order.Contains(k)));
+        for (var i = 0; i < known.Count; i++)
+        {
+            if (order.Contains(known[i])) continue;
+            // I slot a section that's new since the order was saved in just after its usual neighbour
+            var after = i == 0 ? -1 : order.IndexOf(known[i - 1]);
+            order.Insert(after + 1, known[i]);
+        }
         return order;
     }
 
@@ -272,6 +287,8 @@ public partial class CheckInPanel : UserControl
 
             Mood.Value = checkIn.Mood;
             SetChips(PainChips, checkIn.Symptoms.Pain?.ToString(CultureInfo.InvariantCulture));
+            SetChips(DepressionChips, checkIn.Depression.Level?.ToString(CultureInfo.InvariantCulture));
+            SetChips(AnxietyChips, checkIn.Anxiety.Level?.ToString(CultureInfo.InvariantCulture));
             _painMap.Show(checkIn.Symptoms.Areas);
             SetChips(FlowChips, checkIn.Cycle.Flow);
             var feelings = (checkIn.Cycle.Symptoms ?? "").Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
@@ -481,6 +498,8 @@ public partial class CheckInPanel : UserControl
         if (c == null) return;
 
         NoteHeader.Summary = Short(c.Note);
+        DepressionHeader.Summary = c.Depression.Level is { } low ? $"{low}/10" : Short(c.Depression.Notes);
+        AnxietyHeader.Summary = c.Anxiety.Level is { } worry ? $"{worry}/10" : Short(c.Anxiety.Notes);
         MedsHeader.Summary = c.Medications.Count > 0 ? $"{c.Medications.Count} taken" : CheckIn.Has(c.MedsOther) ? "Noted" : null;
         TransitionHeader.Summary = c.Transition.IsMilestone ? "Milestone" : CheckIn.Has(c.Transition.Hrt) ? "Noted" : Short(c.Transition.Milestone);
 

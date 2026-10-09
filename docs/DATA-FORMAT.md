@@ -38,6 +38,8 @@ Kaydence keeps everything as ordinary files in a documented format, so your diar
       { "MedId": "5f0c...", "Name": "Estradiol", "Dose": "2mg", "Time": "08:15" }
     ],
     "Transition": { "Hrt": "Estradiol gel, 2 pumps", "IsMilestone": false },
+    "Depression": { "Level": 6, "Notes": "Low all afternoon" },
+    "Anxiety": { "Level": 3 },
     "Symptoms": { "Pain": 3, "Areas": { "lower-back": 3, "knee-left": 1 } },
     "Sleep": { "Hours": 7.5 },
     "Fitness": { "Minutes": 30 },
@@ -67,6 +69,7 @@ Kaydence keeps everything as ordinary files in a documented format, so your diar
 - **Z** is the stacking order, so higher numbers sit on top.
 - **Text** is a plain copy of everything written on the page, used for search, snippets and printing.
 - **WeightKg** is always stored in kg, whatever unit is shown.
+- **Depression** and **Anxiety** each have a **Level** from 1 (barely there) to 10 (the worst), and optional **Notes**.
 - **Areas** in Symptoms says where it hurts: each key is a body area and the value is 1 for mild, 2 for moderate or 3 for severe. Left and right always mean the person's own left and right. The keys are `head`, `neck`, `chest`, `stomach`, `pelvis`, `upper-back`, `middle-back`, `lower-back`, `buttocks`, and `shoulder`, `upper-arm`, `forearm`, `hand`, `thigh`, `knee`, `lower-leg` and `foot`, each followed by `-left` or `-right`.
 
 ## ink.isf

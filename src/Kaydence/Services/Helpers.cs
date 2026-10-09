@@ -106,6 +106,8 @@ public static class DayText
         };
         bits.AddRange(c.Tasks.Select(t => t.Text));
         bits.Add(Kaydence.Controls.BodyMap.Describe(c.Symptoms.Areas));
+        bits.Add(c.Depression.HasData ? $"Depression {c.Depression.Notes}" : null);
+        bits.Add(c.Anxiety.HasData ? $"Anxiety {c.Anxiety.Notes}" : null);
         bits.AddRange(c.Medications.Select(m => m.Name));
         return string.Join("\n", bits.Where(b => !string.IsNullOrWhiteSpace(b)));
     }

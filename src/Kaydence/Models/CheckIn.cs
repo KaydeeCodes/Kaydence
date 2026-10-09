@@ -23,6 +23,8 @@ public sealed class CheckIn : Observable
     public string? MedsOther { get => _medsOther; set => Set(ref _medsOther, value); }
     public TransitionInfo Transition { get; set; } = new();
     public SymptomsInfo Symptoms { get; set; } = new();
+    public ScaleInfo Depression { get; set; } = new();
+    public ScaleInfo Anxiety { get; set; } = new();
     public SleepInfo Sleep { get; set; } = new();
     public FitnessInfo Fitness { get; set; } = new();
     public ObservableCollection<BpReading> BloodPressure { get; set; } = new();
@@ -43,6 +45,8 @@ public sealed class CheckIn : Observable
         PropertyChanged += (_, _) => Changed?.Invoke();
         Hook(Transition);
         Hook(Symptoms);
+        Hook(Depression);
+        Hook(Anxiety);
         Hook(Sleep);
         Hook(Fitness);
         Hook(Habits);
@@ -54,7 +58,7 @@ public sealed class CheckIn : Observable
 
     public bool HasAnyData() =>
         Mood.HasValue || Has(MoodNote) || Has(Note) || Medications.Count > 0 || Has(MedsOther)
-        || Transition.HasData || Symptoms.HasData || Sleep.HasData || Fitness.HasData
+        || Transition.HasData || Symptoms.HasData || Depression.HasData || Anxiety.HasData || Sleep.HasData || Fitness.HasData
         || Habits.HasData || Cycle.HasData || BloodPressure.Any(b => b.HasData) || WeightKg.HasValue || Tasks.Any(t => Has(t.Text))
         || Has(Struggles) || Has(Wins);
 
@@ -112,6 +116,19 @@ public sealed class SymptomsInfo : Observable
 
     [JsonIgnore]
     public bool HasData => Pain.HasValue || CheckIn.Has(Notes) || Areas is { Count: > 0 };
+}
+
+// I rate my depression or anxiety from 1 to 10 each day with a note, so my doctor and I can see the waves
+public sealed class ScaleInfo : Observable
+{
+    private int? _level;
+    private string? _notes;
+
+    public int? Level { get => _level; set => Set(ref _level, value is >= 1 and <= 10 ? value : null); }
+    public string? Notes { get => _notes; set => Set(ref _notes, value); }
+
+    [JsonIgnore]
+    public bool HasData => Level.HasValue || CheckIn.Has(Notes);
 }
 
 public sealed class SleepInfo : Observable

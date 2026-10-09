@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0
+
+**New: depression and anxiety**
+- Two new sections for your check-in, Depression and Anxiety. Rate each from 1 to 10 every day, with a note about what set it off or what helped. They're off until you switch them on in Settings, Today panel
+- Insights shows both on one chart with a week average line, so the waves stand out, plus which days of the week tend to be worst
+- A new Patterns card points out high spells, how far apart they come, and whether they tend to be higher after short sleep, on period days, on days with more pain, or on days you exercised
+- Printouts for your doctor can include the chart, the patterns, and every day's ratings and notes
+- Search and exports include them too
+
+**Changes**
+- New sections now appear next to where they usually sit in your Today panel, instead of at the bottom
+
 ## 1.1.0
 
 **New: where it hurts**

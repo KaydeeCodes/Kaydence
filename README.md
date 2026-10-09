@@ -32,6 +32,7 @@ It's a diary first. Health, period and transition tracking are optional extras y
 - **Photos and drawings**: paste, drag in, crop, rotate, and draw over the top with pens, highlighters and shapes
 - **Voice notes** of up to five minutes, played back right on the page
 - **A daily check-in** for mood, sleep, tasks, wins and struggles, in whatever order you like
+- **Depression and anxiety ratings** from 1 to 10, with charts of the waves and patterns to talk through with your doctor
 - **A body map** to mark where it hurts, with a heatmap over time in Insights and your doctor printouts
 - **Look back** with Week, Month, Memories ("on this day") and Search
 - **Insights**: mood over time, by weekday and season, and your year in pixels
@@ -111,7 +112,7 @@ The full privacy statement is at [kaydence.kaydee.codes/privacy](https://kaydenc
 
 ## Health features are not medical advice
 
-Kaydence is a diary, not a medical app. The medication, symptoms, blood pressure, weight, transition and period tools are for your own notes. Charts and summaries only show what you typed in. **Period and cycle predictions are rough guesses and must never be used as contraception.** Always speak to a doctor, nurse or pharmacist about your health.
+Kaydence is a diary, not a medical app. The medication, symptoms, depression and anxiety, blood pressure, weight, transition and period tools are for your own notes. Charts and summaries only show what you typed in. **Period and cycle predictions are rough guesses and must never be used as contraception.** Always speak to a doctor, nurse or pharmacist about your health.
 
 ## FAQ
 

@@ -50,7 +50,7 @@ public static class ExportService
         var html = new StringBuilder();
         html.Append(PageStart(days));
         int pictures = 0, voice = 0, problems = 0;
-        var options = new ReportOptions { Writing = true, Pictures = true, Mood = true, CheckIn = true, Health = true, Transition = true };
+        var options = new ReportOptions { Writing = true, Pictures = true, Mood = true, CheckIn = true, Health = true, Mind = true, Transition = true };
         var currentMonth = "";
 
         for (var i = 0; i < days.Count; i++)

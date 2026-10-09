@@ -48,7 +48,7 @@ public partial class PrintView : UserControl
         RefreshPreview();
     }
 
-    // I only offer health, transition and cycle options when those sections are switched on
+    // I only offer health, depression and anxiety, transition and cycle options when those sections are switched on
     private void ApplyOptionalSections()
     {
         if (_settings == null) return;
@@ -60,6 +60,7 @@ public partial class PrintView : UserControl
         Show(IncHealth, _settings.ShowsAny(AppSettings.HealthSections) || _settings.ShowsAny("Cycle"));
         Show(IncHealthCharts, _settings.ShowsAny("Sleep", "Weight", "BloodPressure", "Symptoms"));
         Show(IncTransition, _settings.ShowsAny("Transition"));
+        Show(IncMind, _settings.ShowsAny(AppSettings.MindSections));
     }
 
     // I pick every day for a full PDF of the diary
@@ -101,6 +102,7 @@ public partial class PrintView : UserControl
         IncCheckIn.IsChecked = true;
         IncHealth.IsChecked = doctor;
         IncHealthCharts.IsChecked = doctor;
+        IncMind.IsChecked = doctor;
         IncTransition.IsChecked = doctor;
         ApplyOptionalSections();
         RefreshPreview();
@@ -124,6 +126,7 @@ public partial class PrintView : UserControl
         CheckIn = IncCheckIn.IsChecked == true,
         Health = IncHealth.IsChecked == true,
         HealthCharts = IncHealthCharts.IsChecked == true,
+        Mind = IncMind.IsChecked == true,
         Transition = IncTransition.IsChecked == true,
         DayPerPage = DayPerPage.IsChecked == true
     };

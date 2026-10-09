@@ -337,3 +337,45 @@ public static class HealthCharts
         PrintColours = forPrint
     };
 }
+
+// I draw my depression and anxiety on one chart so I can see their waves side by side
+public static class MindChart
+{
+    public static readonly Color Depression = Color.FromRgb(0x4F, 0x6B, 0xD8);
+    public static readonly Color Anxiety = Color.FromRgb(0xE0, 0x7A, 0x1F);
+
+    public static LineChart? Build(IEnumerable<(DateOnly Day, CheckIn CheckIn)> source, DateOnly from, DateOnly to, bool forPrint)
+    {
+        var days = source.ToList();
+        var chart = new LineChart
+        {
+            MinX = from.DayNumber,
+            MaxX = to.DayNumber,
+            MinY = 0.5,
+            MaxY = 10.5,
+            Ticks = new double[] { 1, 4, 7, 10 },
+            FormatY = v => v.ToString("0", CultureInfo.CurrentCulture),
+            FormatTip = v => v % 1 == 0 ? $"{v:0} out of 10" : $"{v:0.0} average",
+            Height = forPrint ? 170 : 220,
+            Interactive = !forPrint,
+            PrintColours = forPrint
+        };
+
+        foreach (var (name, pick) in MindPatterns.Measures)
+        {
+            var points = days.Where(d => pick(d.CheckIn).HasValue).Select(d => new Point(d.Day.DayNumber, pick(d.CheckIn)!.Value)).ToList();
+            if (points.Count == 0) continue;
+            var colour = name == "Depression" ? Depression : Anxiety;
+            chart.Series.Add(new ChartSeries { Name = name, Color = colour, Thickness = 1.3, Opacity = 0.5, Points = points });
+
+            // I smooth each one over the week before so the waves stand out from the day to day bumps
+            var smooth = points.Select(p =>
+            {
+                var window = points.Where(o => o.X > p.X - 7 && o.X <= p.X).Select(o => o.Y);
+                return new Point(p.X, Math.Round(window.Average(), 2));
+            }).ToList();
+            chart.Series.Add(new ChartSeries { Name = $"{name} week average", Color = colour, Thickness = 3, ShowDots = false, Points = smooth });
+        }
+        return chart.Series.Count == 0 ? null : chart;
+    }
+}

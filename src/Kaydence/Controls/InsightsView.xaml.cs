@@ -66,6 +66,7 @@ public partial class InsightsView : UserControl
         AddSummary(days);
         AddMoodCharts(days, from, to);
         AddYearInPixels();
+        if (_settings.ShowsAny(AppSettings.MindSections) || MindPatterns.HasAny(days)) AddMind(days, from, to);
         AddHealth(days, from, to);
         if (!_settings.HiddenSections.Contains("Cycle")) AddCycle();
     }
@@ -316,6 +317,67 @@ public partial class InsightsView : UserControl
         var card = UiKit.Card(stack, new Thickness(18, 14, 18, 14));
         card.HorizontalAlignment = HorizontalAlignment.Left;
         Body.Children.Add(card);
+    }
+
+    // I show my depression and anxiety waves, which weekdays are worst, and any patterns worth taking to my doctor
+    private void AddMind(List<(DateOnly Day, CheckIn CheckIn)> days, DateOnly from, DateOnly to)
+    {
+        Body.Children.Add(UiKit.SectionLabel("Depression and anxiety"));
+        var chart = MindChart.Build(days, from, to, forPrint: false);
+        if (chart == null)
+        {
+            Body.Children.Add(Empty("Once you rate your depression or anxiety on a few days, the waves and any patterns show up here."));
+            return;
+        }
+
+        var culture = CultureInfo.CurrentCulture;
+        var stats = new WrapPanel();
+        foreach (var (name, pick) in MindPatterns.Measures)
+        {
+            var ratings = days.Where(d => pick(d.CheckIn).HasValue).Select(d => pick(d.CheckIn)!.Value).ToList();
+            if (ratings.Count == 0) continue;
+            var high = ratings.Count(r => r >= MindPatterns.High);
+            stats.Children.Add(Stat(ratings.Average().ToString("0.0", culture), $"average {name.ToLowerInvariant()}",
+                $"Out of 10, {MindPatterns.High} or more on {high} of {ratings.Count} days"));
+        }
+        Body.Children.Add(stats);
+        Body.Children.Add(ChartCard(chart, "Blue is depression and orange is anxiety. Each dot is a day, and the thick lines are your average over the week before it. Higher means worse."));
+
+        var weekOrder = MonthCalendar.MondayFirst
+            ? new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday }
+            : new[] { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+        var names = culture.DateTimeFormat;
+        var wrap = new WrapPanel();
+        foreach (var (name, pick) in MindPatterns.Measures)
+        {
+            if (!days.Any(d => pick(d.CheckIn).HasValue)) continue;
+            var colour = name == "Depression" ? MindChart.Depression : MindChart.Anxiety;
+            var bars = weekOrder.Select(day =>
+            {
+                var set = days.Where(d => d.Day.DayOfWeek == day && pick(d.CheckIn).HasValue).Select(d => pick(d.CheckIn)!.Value).ToList();
+                return set.Count == 0
+                    ? new BarChart.Bar(names.GetAbbreviatedDayName(day), null, $"{names.GetDayName(day)}: not rated")
+                    : new BarChart.Bar(names.GetAbbreviatedDayName(day), set.Average(),
+                        $"{names.GetDayName(day)}: {set.Average().ToString("0.0", culture)} from {set.Count} {(set.Count == 1 ? "day" : "days")}", colour);
+            }).ToList();
+            wrap.Children.Add(ChartPanel($"{name} by day of the week", BarChart.Build(bars, 10, v => v.ToString("0.0", culture)), 420));
+        }
+        Body.Children.Add(wrap);
+
+        var lines = MindPatterns.Describe(days);
+        var list = new StackPanel();
+        foreach (var line in lines)
+        {
+            var row = new DockPanel { Margin = new Thickness(0, 0, 0, 6) };
+            var dot = UiKit.Text("\u2022", 13, "Brush.Accent", FontWeights.Bold);
+            dot.Margin = new Thickness(0, 0, 8, 0);
+            DockPanel.SetDock(dot, Dock.Left);
+            row.Children.Add(dot);
+            row.Children.Add(UiKit.Text(line, 13, "Brush.Text", wrap: true));
+            list.Children.Add(row);
+        }
+        Body.Children.Add(ChartPanel("Patterns", list, double.NaN,
+            "Only patterns in what you've logged, not causes. Worth talking through with your doctor. The more days you rate, the more these mean."));
     }
 
     private void AddHealth(List<(DateOnly Day, CheckIn CheckIn)> days, DateOnly from, DateOnly to)

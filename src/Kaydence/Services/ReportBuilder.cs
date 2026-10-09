@@ -21,6 +21,7 @@ public sealed class ReportOptions
     public bool CheckIn { get; set; } = true;
     public bool Health { get; set; }
     public bool HealthCharts { get; set; }
+    public bool Mind { get; set; }
     public bool Transition { get; set; }
     public bool DayPerPage { get; set; }
 }
@@ -65,6 +66,22 @@ public static class ReportBuilder
         {
             document.Blocks.Add(new Paragraph(new Run("Mood over these days") { FontWeight = FontWeights.Bold, Foreground = Ink }) { FontSize = 11.5, Margin = new Thickness(0, 4, 0, 2) });
             document.Blocks.Add(new BlockUIContainer(moodChart) { Margin = new Thickness(0, 0, 0, 6) });
+        }
+
+        if (options.Mind && MindChart.Build(entries.Select(e => (e.Day, e.Entry.CheckIn)), from, to, forPrint: true) is { } mindChart)
+        {
+            mindChart.Width = 640;
+            var heading = new Paragraph { FontSize = 11, Foreground = Muted, Margin = new Thickness(0, 10, 0, 2), KeepWithNext = true };
+            heading.Inlines.Add(new Run("Depression and anxiety") { FontWeight = FontWeights.Bold, Foreground = Ink });
+            heading.Inlines.Add(new Run("   1 to 10, higher is worse. Blue is depression, orange is anxiety, thick lines are the week average"));
+            document.Blocks.Add(heading);
+            document.Blocks.Add(new BlockUIContainer(mindChart) { Margin = new Thickness(0, 0, 0, 4) });
+
+            var patterns = new List { MarkerStyle = TextMarkerStyle.Disc, Margin = new Thickness(0, 2, 0, 4), Padding = new Thickness(18, 0, 0, 0), FontSize = 12 };
+            foreach (var line in MindPatterns.Describe(entries.Select(e => (e.Day, e.Entry.CheckIn)).ToList()))
+                patterns.ListItems.Add(new ListItem(new Paragraph(new Run(line)) { Margin = new Thickness(0, 0, 0, 2) }));
+            document.Blocks.Add(patterns);
+            document.Blocks.Add(new Paragraph(new Run("These are patterns in what was logged, not causes.")) { FontSize = 10.5, Foreground = Muted, Margin = new Thickness(0, 0, 0, 6) });
         }
 
         if (options.HealthCharts)
@@ -275,6 +292,12 @@ public static class ReportBuilder
                 h.Caffeine > 0 ? $"{h.Caffeine} caffeine {(h.Caffeine == 1 ? "drink" : "drinks")}" : null,
                 h.Smoked ? (h.Cigarettes is int smoked ? $"smoked {smoked}" : "smoked") : null,
                 h.Drank ? (h.Alcohol is double drank ? $"{drank:0.#} units or glasses of alcohol" : "drank alcohol") : null));
+        }
+
+        if (options.Mind)
+        {
+            Add("Depression", Join(c.Depression.Level is int low ? $"{low} out of 10" : null, c.Depression.Notes));
+            Add("Anxiety", Join(c.Anxiety.Level is int worry ? $"{worry} out of 10" : null, c.Anxiety.Notes));
         }
 
         if (options.Health)

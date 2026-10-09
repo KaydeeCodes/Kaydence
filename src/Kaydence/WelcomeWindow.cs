@@ -222,7 +222,7 @@ public sealed class WelcomeWindow : Window
             "These are the sections in your daily check-in. Everything is optional, and you can switch them on or off, or change their order, in Settings whenever you like.");
 
         var everyday = new UniformGrid { Columns = 2 };
-        var optional = new[] { "Transition", "Cycle" }.Concat(AppSettings.HealthSections).ToHashSet();
+        var optional = new[] { "Transition", "Cycle" }.Concat(AppSettings.HealthSections).Concat(AppSettings.MindSections).ToHashSet();
         foreach (var (key, label) in CheckInPanel.Sections.Where(s => !optional.Contains(s.Key)))
         {
             var box = new CheckBox
@@ -244,6 +244,8 @@ public sealed class WelcomeWindow : Window
         page.Children.Add(MakeLabel("Optional extras"));
         page.Children.Add(SwitchRow("Health", "Medications, symptoms and pain, blood pressure and weight, with charts and a report for your doctor",
             _s.ShowsAny(AppSettings.HealthSections), v => _s.ShowSections(v, AppSettings.HealthSections)));
+        page.Children.Add(SwitchRow("Depression and anxiety", "Rate each one from 1 to 10 every day to see the waves and patterns over time, with charts and a report for your doctor",
+            _s.ShowsAny(AppSettings.MindSections), v => _s.ShowSections(v, AppSettings.MindSections)));
         page.Children.Add(SwitchRow("Period and cycle", "Log your flow and Kaydence makes a rough guess at when your next period is due, marked on the calendar",
             _s.ShowsAny("Cycle"), v => _s.ShowSections(v, "Cycle")));
         page.Children.Add(SwitchRow("Transition", "HRT or treatment notes, injection sites and milestones for your transition",

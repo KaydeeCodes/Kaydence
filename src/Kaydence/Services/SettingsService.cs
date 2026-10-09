@@ -18,7 +18,7 @@ public sealed class AppSettings
     public bool ShowTooltips { get; set; } = true;
 
     public bool CheckInOpen { get; set; } = true;
-    public List<string> HiddenSections { get; set; } = new() { "Transition", "Water", "Caffeine", "Smoking", "Alcohol", "Cycle" };
+    public List<string> HiddenSections { get; set; } = new() { "Transition", "Water", "Caffeine", "Smoking", "Alcohol", "Cycle", "Depression", "Anxiety" };
     public List<string> SectionOrder { get; set; } = new();
     public int SettingsVersion { get; set; }
     public string WeightUnit { get; set; } = "kg";
@@ -72,6 +72,9 @@ public sealed class AppSettings
     // I group the optional health sections so they can be switched on or off together
     public static readonly string[] HealthSections = { "Medications", "Symptoms", "BloodPressure", "Weight" };
 
+    // I keep depression and anxiety as their own extra so they can be on without the rest of the health sections
+    public static readonly string[] MindSections = { "Depression", "Anxiety" };
+
     public bool ShowsAny(params string[] sections) => sections.Any(s => !HiddenSections.Contains(s));
 
     public void ShowSections(bool show, params string[] sections)
@@ -122,9 +125,12 @@ public static class SettingsService
     // I switch new sections off for people who already had settings, so nothing appears they didn't ask for
     private static AppSettings Upgrade(AppSettings settings)
     {
-        if (settings.SettingsVersion < 2) Log.Info("Settings", $"Upgrading settings from version {settings.SettingsVersion} to 2");
+        if (settings.SettingsVersion < 3) Log.Info("Settings", $"Upgrading settings from version {settings.SettingsVersion} to 3");
         if (settings.SettingsVersion < 2 && !settings.HiddenSections.Contains("Cycle")) settings.HiddenSections.Add("Cycle");
-        settings.SettingsVersion = 2;
+        if (settings.SettingsVersion < 3)
+            foreach (var section in AppSettings.MindSections.Where(s => !settings.HiddenSections.Contains(s)))
+                settings.HiddenSections.Add(section);
+        settings.SettingsVersion = 3;
         return settings;
     }
 

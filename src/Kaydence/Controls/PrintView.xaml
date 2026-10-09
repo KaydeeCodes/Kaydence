@@ -33,6 +33,7 @@
                     <CheckBox x:Name="IncPictures" Content="Pictures and drawings" Margin="0,4" IsChecked="True" Click="Option_Click"/>
                     <CheckBox x:Name="IncMood" Content="Mood" Margin="0,4" IsChecked="True" Click="Option_Click"/>
                     <CheckBox x:Name="IncChart" Content="Mood chart at the top" Margin="0,4" IsChecked="True" Click="Option_Click"/>
+                    <CheckBox x:Name="IncMind" Content="Depression and anxiety, with a chart and patterns" Margin="0,4" Click="Option_Click"/>
                     <CheckBox x:Name="IncHealthCharts" Content="Charts of sleep, weight, blood pressure and pain" Margin="0,4" Click="Option_Click"/>
                     <CheckBox x:Name="IncCheckIn" Content="Note, sleep, fitness, tasks, struggles and wins" Margin="0,4" IsChecked="True" Click="Option_Click"/>
                     <CheckBox x:Name="IncHealth" Content="Medications, pain, blood pressure, weight and period" Margin="0,4" Click="Option_Click"/>

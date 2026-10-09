@@ -31,6 +31,31 @@
                              AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64"/>
                 </Expander>
 
+                <!-- My depression and anxiety ratings, so I can see the waves and show my doctor -->
+                <Expander x:Name="DepressionSection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="DepressionHeader" Title="Depression"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Depression}">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="How strong is it today? 1 is barely there, 10 is the worst" Margin="0,0,0,5" TextWrapping="Wrap"/>
+                        <WrapPanel x:Name="DepressionChips"/>
+                        <TextBox Margin="0,8,0,0" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="What might have set it off, or what helped" AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
+                <Expander x:Name="AnxietySection" Style="{StaticResource Section}">
+                    <Expander.Header>
+                        <c:SectionHeader x:Name="AnxietyHeader" Title="Anxiety"/>
+                    </Expander.Header>
+                    <StackPanel DataContext="{Binding Anxiety}">
+                        <TextBlock Style="{StaticResource FieldLabel}" Text="How strong is it today? 1 is barely there, 10 is the worst" Margin="0,0,0,5" TextWrapping="Wrap"/>
+                        <WrapPanel x:Name="AnxietyChips"/>
+                        <TextBox Margin="0,8,0,0" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                                 Tag="What might have set it off, or what helped" AcceptsReturn="True" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Expander>
+
                 <Expander x:Name="MedsSection" Style="{StaticResource Section}">
                     <Expander.Header>
                         <c:SectionHeader x:Name="MedsHeader" Title="Medications taken"/>
